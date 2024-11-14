@@ -9,7 +9,7 @@ def get_auth(self):
     auth_info = get_auth_waiter(login, password)
 
     if auth_info is not None:
-        role = auth_info[3]
+        role = auth_info[2]
         if role == "Официант":
             print(f"Официант: {auth_info[3]} {auth_info[4]}")
         elif role == "Администратор":
