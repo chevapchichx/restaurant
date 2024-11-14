@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from service.staff_service import *
+from service.staff_service import 
 
 def get_auth(self):
     login = self.login_input.text().strip()
