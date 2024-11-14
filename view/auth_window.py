@@ -26,7 +26,6 @@ class Auth_Window(QWidget):
         self.entry_button.setFixedHeight(30)
         self.entry_button.clicked.connect(lambda: get_auth(self))
   
-
         form_layout = QVBoxLayout()
         form_layout.addWidget(self.login_label)
         form_layout.addWidget(self.login_input)
