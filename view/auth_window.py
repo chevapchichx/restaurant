@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButto
 class Auth_Window(QWidget):
     def __init__(self):
         super().__init__()
+        # self.waiter_window = None 
         self.UI_Auth_Window()
 
     def UI_Auth_Window(self):      
@@ -44,6 +45,7 @@ class Auth_Window(QWidget):
         self.setLayout(main_layout)
 
         self.setFixedSize(400, 200)
+
 
 
 if __name__ == "__main__":
