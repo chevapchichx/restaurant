@@ -1,19 +1,13 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from service.staff_service import *
+from service.user_service import *
 
 def open_waiter_window(self, auth_info):
-    from waiter_window import WaiterWindow
-    self.waiter_window = WaiterWindow(auth_info)  
+    from view.waiter_order_window import WaiterOrderWindow
+    self.waiter_window = WaiterOrderWindow(auth_info)  
     self.waiter_window.show()
     self.hide()  
-
-def open_auth_window(self):
-    from auth_window import Auth_Window
-    self.auth_window = Auth_Window()
-    self.auth_window.show()
-    self.close()  
 
 def get_auth(self):
     login = self.login_input.text().strip()

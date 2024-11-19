@@ -1,18 +1,18 @@
 import sys
 import os
-from auth_service import *
+from auth_w_service import *
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout
 
 
 class Auth_Window(QWidget):
     def __init__(self):
         super().__init__()
-        # self.waiter_window = None 
         self.UI_Auth_Window()
 
     def UI_Auth_Window(self):      
-        self.setWindowTitle("Login")
+        self.setWindowTitle("Авторизация")
         self.setGeometry(100, 100, 400, 200)
+        self.setFixedSize(400, 200)
 
         self.login_label = QLabel("Логин")
         self.login_input = QLineEdit()

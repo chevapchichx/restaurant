@@ -18,3 +18,14 @@ def get_auth_waiter(login, password):
             return auth_info
         else:
             return None
+
+
+def get_user_info(login):
+    with engine.connect() as conn:
+        query = text("""
+            SELECT post, last_name, first_name, middle_name, birth_date, address, phone_number, salary
+            FROM staff 
+            WHERE login = :login
+        """)
+        result = conn.execute(query, {"login": login})
+        return result.fetchone()
