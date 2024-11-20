@@ -1,31 +1,48 @@
-from sqlalchemy import create_engine, text
+from PyQt6.QtWidgets import QMessageBox
 import bcrypt
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from data.user_data import *
+from service.database_service import *
+from service.singleton import *
 
+class User_Service(metaclass=SingletonMeta):
+    __user: User = None
 
-engine = create_engine('mysql+mysqlconnector://root:root@localhost:8889/restaurant')
-
-def get_auth_waiter(login, password):
-    with engine.connect() as conn:
-        query = text("SELECT login, password, post, first_name, last_name FROM staff WHERE login = :login")
-        result = conn.execute(query, {"login": login})
-        auth_info = result.fetchone()
-        
-        if auth_info is None:
-            return None
-        
-        hashed_password = auth_info[1]
-        if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
-            return auth_info
+    @property
+    def authorised_user(self):
+        return self.__user
+    
+    def get_user_db(self, login, password):
+        data_service = Database_Service()
+        query = data_service.auth_user(login)
+        if query.error is None:
+            result = query.result   
+            if result:
+                hashed_password = result[10]
+                if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
+                    self.__user = User(
+                        role=result[0],
+                        job=result[1], 
+                        last_name=result[2], 
+                        first_name=result[3], 
+                        middle_name=result[4], 
+                        birth_date=result[5], 
+                        address=result[6], 
+                        phone_number=result[7], 
+                        salary=result[8], 
+                        login=result[9], 
+                        password=result[10])
+                else:
+                    return "Неверный логин или пароль"
+                if self.__user.role > len(User_Role) or self.__user.role < 1:
+                    self.__user = None
+                    return "Неизвестная роль пользователя"
+                return ""
+            else:
+                return "Пользователь не найден"
         else:
-            return None
+            return f"Ошибка подключения к базе данных: {query.error}"
 
-
-def get_user_info(login):
-    with engine.connect() as conn:
-        query = text("""
-            SELECT post, last_name, first_name, middle_name, birth_date, address, phone_number, salary
-            FROM staff 
-            WHERE login = :login
-        """)
-        result = conn.execute(query, {"login": login})
-        return result.fetchone()
+    

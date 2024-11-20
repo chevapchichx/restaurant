@@ -10,8 +10,8 @@ def open_auth_window(self):
     self.auth_window.show()
     self.close()  
 
-def open_user_info_window(self, auth_info):
+def open_user_info_window(self):
     from view.user_info_window import UserInfoWindow
-    self.user_info_window = UserInfoWindow(auth_info)
+    self.user_info_window = UserInfoWindow()
     self.user_info_window.show()
     self.close()
