@@ -7,7 +7,7 @@ from data.query_result_data import *
 class Database_Service():
     __engine = create_engine('mysql+mysqlconnector://root:root@localhost:8889/restaurant')
 
-    def auth_user(self, login):
+    def get_user_db(self, login):
         try:
             with self.__engine.connect() as conn:
                 query = text("""
@@ -18,4 +18,5 @@ class Database_Service():
                 return Query_Result(result, None)
         except Exception as e:
             return Query_Result(None, e)
+    
     

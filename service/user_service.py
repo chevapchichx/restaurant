@@ -14,9 +14,9 @@ class User_Service(metaclass=SingletonMeta):
     def authorised_user(self):
         return self.__user
     
-    def get_user_db(self, login, password):
+    def fill_user(self, login, password):
         data_service = Database_Service()
-        query = data_service.auth_user(login)
+        query = data_service.get_user_db(login)
         if query.error is None:
             result = query.result   
             if result:
@@ -35,7 +35,7 @@ class User_Service(metaclass=SingletonMeta):
                         login=result[9], 
                         password=result[10])
                 else:
-                    return "Неверный логин или пароль"
+                    return "Неверный пароль"
                 if self.__user.role > len(User_Role) or self.__user.role < 1:
                     self.__user = None
                     return "Неизвестная роль пользователя"

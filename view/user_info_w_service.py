@@ -10,8 +10,8 @@ from data.user_data import *
 #     return user
 
 
-def open_waiter_order_window(self):
-    from view.order_list_window import WaiterOrderWindow
-    self.waiter_window = WaiterOrderWindow()
+def open_order_list_window(self):
+    from view.order_list_window import Order_List_Window
+    self.waiter_window = Order_List_Window()
     self.waiter_window.show()
     self.close()

@@ -72,7 +72,7 @@ class UserInfoWindow(QWidget):
         back_button_layout.addWidget(self.back_button)
         main_layout.addLayout(back_button_layout)
 
-        self.back_button.clicked.connect(lambda: open_waiter_order_window(self))
+        self.back_button.clicked.connect(lambda: open_order_list_window(self))
 
 
 # if __name__ == "__main__":
