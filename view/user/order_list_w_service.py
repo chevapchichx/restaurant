@@ -11,7 +11,7 @@ def open_auth_window(self):
     self.close()  
 
 def open_user_info_window(self):
-    from view.user_info_window import UserInfoWindow
+    from view.user.user_info_window import UserInfoWindow
     self.user_info_window = UserInfoWindow()
     self.user_info_window.show()
     self.close()

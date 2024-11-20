@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem)
-from view.order_list_w_service import *
+from view.user.order_list_w_service import *
 
 class Order_List_Window(QWidget):
     def __init__(self):
