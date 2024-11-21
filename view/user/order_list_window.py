@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem)
-from view.user.order_list_w_service import *
+from order_list_w_service import *
 
 class Order_List_Window(QWidget):
     def __init__(self):
@@ -21,7 +21,7 @@ class Order_List_Window(QWidget):
 
         top_layout.addWidget(self.add_order_button)
         top_layout.addStretch()
-        self.user_name_label = QLabel(f"Официант: {self.user.first_name} {self.user.last_name}")
+        self.user_name_label = QLabel(f"{self.user.role_name}: {self.user.first_name} {self.user.last_name}")
         top_layout.addWidget(self.user_name_label)
         top_layout.addStretch()
         top_layout.addWidget(self.info_button)

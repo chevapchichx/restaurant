@@ -1,10 +1,8 @@
-from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QGridLayout, QHBoxLayout)
+from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QGridLayout, QHBoxLayout, QSpacerItem, QSizePolicy)
 from PyQt6.QtCore import Qt
-import sys
 from user_info_w_service import *
 
-
-class UserInfoWindow(QWidget):
+class User_Info_Window(QWidget):
     def __init__(self):
         super().__init__()
         self.user = User_Service().authorised_user
@@ -18,51 +16,40 @@ class UserInfoWindow(QWidget):
         main_layout = QVBoxLayout(self)
 
         self.name_label = QLabel(self.user.full_name)
-        self.name_label.setFixedHeight(40)
+        self.name_label.setFixedHeight(45)
         self.name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(self.name_label)
 
+        left_spacer = QSpacerItem(60, 10, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
         details_layout = QGridLayout()
-        details_layout.setHorizontalSpacing(20)
-        details_layout.setVerticalSpacing(10)
+        details_layout.setHorizontalSpacing(30)
+        details_layout.setVerticalSpacing(15)
+        details_layout.setColumnStretch(1, 1)
+        details_layout.addItem(left_spacer, 0, 0)
 
-        # label_style = """
-        #     QLabel {
-        #         border: 1px solid gray;
-        #         border-radius: 4px;
-        #         padding: 5px;
-        #         min-width: 150px;
-        #         min-height: 30px;
-        #     }
-        # """
-
-        details_layout.addWidget(QLabel("Дата рождения:"), 0, 0)
+        details_layout.addWidget(QLabel("Дата рождения:"), 0, 1)
         self.birth_date_label = QLabel(self.user.birth_date)
-        # self.birth_date_label.setStyleSheet(label_style)
-        details_layout.addWidget(self.birth_date_label, 0, 1)
+        details_layout.addWidget(self.birth_date_label, 0, 2)
 
-        details_layout.addWidget(QLabel("Номер телефона:"), 1, 0)
+        details_layout.addWidget(QLabel("Номер телефона:"), 1, 1)
         self.phone_number_label = QLabel(self.user.phone_number)
-        # self.phone_number_label.setStyleSheet(label_style)
-        details_layout.addWidget(self.phone_number_label, 1, 1)
+        details_layout.addWidget(self.phone_number_label, 1, 2)
 
-        details_layout.addWidget(QLabel("Должность:"), 2, 0)
-        self.position_label = QLabel(self.user.job)
-        # self.position_label.setStyleSheet(label_style)
-        details_layout.addWidget(self.position_label, 2, 1)
+        details_layout.addWidget(QLabel("Должность:"), 2, 1)
+        self.job_label = QLabel(self.user.job)
+        details_layout.addWidget(self.job_label, 2, 2)
 
-        details_layout.addWidget(QLabel("Зарплата:"), 3, 0)
+        details_layout.addWidget(QLabel("Зарплата:"), 3, 1)
         self.salary_label = QLabel(str(self.user.salary))
-        # self.salary_label.setStyleSheet(label_style)
-        details_layout.addWidget(self.salary_label, 3, 1)
+        details_layout.addWidget(self.salary_label, 3, 2)
 
-        details_layout.addWidget(QLabel("Адрес:"), 0, 2)
+        details_layout.addWidget(QLabel("Адрес:"), 0, 3)
         self.address_label = QLabel(self.user.address)
-        # self.address_label.setStyleSheet(label_style)
-        self.address_label.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        # self.address_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.address_label.setWordWrap(True)
-        self.address_label.setFixedSize(200, 80)
-        details_layout.addWidget(self.address_label, 0, 3, 4, 1)
+        self.address_label.setFixedSize(170, 50)
+        details_layout.addWidget(self.address_label, 0, 4)
 
         main_layout.addLayout(details_layout)
 
@@ -79,7 +66,8 @@ class UserInfoWindow(QWidget):
 #     app = QApplication(sys.argv)
 #     # Пример данных пользователя для тестирования
 #     user = User(
-#         post="Официант",
+#         role=1,
+#         job="Официант",
 #         last_name="Иванов",
 #         first_name="Иван",
 #         middle_name="Иванович",
@@ -90,6 +78,6 @@ class UserInfoWindow(QWidget):
 #         login="ivanov",
 #         password=""
 #     )
-#     window = UserInfoWindow(user)
+#     window = User_Info_Window()
 #     window.show()
 #     sys.exit(app.exec())

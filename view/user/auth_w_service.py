@@ -24,6 +24,6 @@ def get_auth(self):
         elif user.role == User_Role.COOK:
             print(f"Повар: {user.first_name} {user.last_name}")
         elif user.role == User_Role.ADMIN:
-            print(f"Администратор: {user.first_name} {user.last_name}")
+            open_order_list_window(self)
     else:
         QMessageBox.critical(self, "Ошибка", result)
