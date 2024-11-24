@@ -29,7 +29,7 @@ class User_Info_Window(QWidget):
         details_layout.addItem(left_spacer, 0, 0)
 
         details_layout.addWidget(QLabel("Дата рождения:"), 0, 1)
-        self.birth_date_label = QLabel(self.user.birth_date)
+        self.birth_date_label = QLabel(self.user.birth_date.strftime('%d-%m-%Y'))
         details_layout.addWidget(self.birth_date_label, 0, 2)
 
         details_layout.addWidget(QLabel("Номер телефона:"), 1, 1)

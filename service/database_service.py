@@ -18,5 +18,4 @@ class Database_Service():
                 return Query_Result(result, None)
         except Exception as e:
             return Query_Result(None, e)
-    
-    
+

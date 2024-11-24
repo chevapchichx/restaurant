@@ -1,4 +1,5 @@
 from enum import IntEnum
+from datetime import date
 
 class User_Role(IntEnum):
     WAITER = 1
@@ -26,7 +27,7 @@ class User:
         self.last_name = str(last_name)
         self.first_name = str(first_name)
         self.middle_name = str(middle_name)
-        self.birth_date = str(birth_date)
+        self.birth_date = birth_date
         self.address = str(address)
         self.phone_number = str(phone_number)
         self.salary = int(salary)

@@ -16,8 +16,9 @@ class Order_List_Window(QWidget):
 
         top_layout = QHBoxLayout()
         self.add_order_button = QPushButton("Добавить заказ")
-        self.info_button = QPushButton("Обо мне")
+        self.info_button = QPushButton("Кабинет")
         self.exit_button = QPushButton("Выйти")
+        self.button_1 = QPushButton("Для админа")
 
         top_layout.addWidget(self.add_order_button)
         top_layout.addStretch()
@@ -28,7 +29,7 @@ class Order_List_Window(QWidget):
 
         self.orders_table = QTableWidget()
         self.orders_table.setColumnCount(5)
-        self.orders_table.setHorizontalHeaderLabels(["Заказ", "Статус", "Стол", "Время", "Сумма"])
+        self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Сумма", "Статус"])
         self.orders_table.setRowCount(10)
         for i in range(10):
             self.orders_table.setItem(i, 0, QTableWidgetItem(f"{i+1}"))
@@ -40,6 +41,9 @@ class Order_List_Window(QWidget):
         exit_layout = QHBoxLayout()
         exit_layout.addStretch()
         exit_layout.addWidget(self.exit_button)
+
+        if self.user.role == User_Role.ADMIN:
+            exit_layout.addWidget(self.button_1)
 
         main_layout.addLayout(top_layout)
         main_layout.addWidget(self.orders_table)

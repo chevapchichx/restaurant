@@ -7,12 +7,15 @@ from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButto
 class Auth_Window(QWidget):
     def __init__(self):
         super().__init__()
+        self.user = User_Service().authorised_user
         self.UI_Auth_Window()
 
     def UI_Auth_Window(self):      
         self.setWindowTitle("Авторизация")
         self.setGeometry(100, 100, 400, 200)
         self.setFixedSize(400, 200)
+
+        main_layout = QVBoxLayout()
 
         self.login_label = QLabel("Логин")
         self.login_input = QLineEdit()
@@ -38,7 +41,6 @@ class Auth_Window(QWidget):
         button_layout.addWidget(self.entry_button)
         button_layout.addStretch(1)
 
-        main_layout = QVBoxLayout()
         main_layout.addLayout(form_layout)
         main_layout.addLayout(button_layout)
         
@@ -55,7 +57,7 @@ if __name__ == "__main__":
     sys.exit(app.exec())
 
 
-# password = b'456'
+# password = b'1672'
  
 # salt = bcrypt.gensalt()
 # hashed = bcrypt.hashpw(password, salt)
