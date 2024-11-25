@@ -12,3 +12,7 @@ view/user/__pycache__/order_list_window.cpython-312.pyc
 view/user/__pycache__/user_info_w_service.cpython-312.pyc
 view/user/__pycache__/user_info_window.cpython-312.pyc
 .DS_Store
+data/__pycache__/order_data.cpython-312.pyc
+service/__pycache__/order_service.cpython-312.pyc
+view/order/__pycache__/order_details_w_service.cpython-312.pyc
+view/order/__pycache__/order_details_window.cpython-312.pyc

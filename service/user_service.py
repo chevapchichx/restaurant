@@ -1,4 +1,3 @@
-from PyQt6.QtWidgets import QMessageBox
 import bcrypt
 import sys
 import os

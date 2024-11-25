@@ -1,5 +1,6 @@
-from user_data import *
+# from user_data import *
 from enum import IntEnum
+from data.user_data import User
 
 class Order_Status(IntEnum):
     CREATED = 1
@@ -12,18 +13,21 @@ class Order:
 
     @property
     def status_name(self):
-        return self.__get_status_name
+        return self.__get_status_name()
     
     @property
     def status(self):
         return self.__status
 
-    def __init__(self, worker, meal, table, order_date, order_time, status):
+    def __init__(self, id_order, order_num, worker, meal, table, order_date, order_time, price, status):
+        self.id_order = int(id_order)
+        self.order_num = int(order_num)
         self.worker = worker
-        self.meal = list(meal)
+        self.meal = int(meal)
         self.table = int(table)
         self.date = order_date
         self.time = order_time
+        self.price = int(price)
         self.__status = int(status)
 
     def __get_status_name(self):
