@@ -48,8 +48,6 @@ class Auth_Window(QWidget):
 
         self.setFixedSize(400, 200)
 
-
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = Auth_Window()

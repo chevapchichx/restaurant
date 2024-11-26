@@ -21,7 +21,8 @@ class User:
     def role(self):
         return self.__role
     
-    def __init__(self, role, job, last_name, first_name, middle_name, birth_date, address, phone_number, salary, login, password):
+    def __init__(self, id_worker, role, job, last_name, first_name, middle_name, birth_date, address, phone_number, salary, login, password):
+        self.id_worker = int(id_worker)
         self.__role = int(role)
         self.job = str(job)
         self.last_name = str(last_name)

@@ -1,6 +1,10 @@
 from PyQt6.QtWidgets import (QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem)
 from PyQt6.QtCore import Qt
-from order_list_w_service import *
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from view.order.order_list_w_service import *
+from view.order.order_edit_w_service import *
 from service.user_service import *
 from service.order_service import *
 
@@ -8,8 +12,7 @@ class Order_List_Window(QWidget):
     def __init__(self):
         super().__init__()
         self.user = User_Service().authorised_user
-        order_service = Order_Service().fill_orders(self.user.login, self.user.role)
-        self.orders = sorted(order_service, key=lambda orders: orders.date)
+        self.orders = sorted(Order_Service().get_orders(self.user.id_worker, self.user.role), key=lambda order: order.date, reverse=True)
         self.UI_Order_List_Window()
 
     def UI_Order_List_Window(self):
@@ -20,7 +23,7 @@ class Order_List_Window(QWidget):
         main_layout = QVBoxLayout(self)
 
         top_layout = QHBoxLayout()
-        self.add_order_button = QPushButton("Добавить заказ")
+        self.add_order_button = QPushButton("Новый заказ")
         self.info_button = QPushButton("Кабинет")
         self.exit_button = QPushButton("Выйти")
         self.button_1 = QPushButton("Для админа")
@@ -34,12 +37,14 @@ class Order_List_Window(QWidget):
 
         self.orders_table = QTableWidget()
         self.orders_table.setColumnCount(5)
-        self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Сумма", "Статус"])
+        self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Дата", "Статус"])
 
         filtered_orders = [order for order in self.orders if order.status != Order_Status.CLOSED]
-        self.orders_table.setRowCount(len(filtered_orders)) 
+        unique_orders = {order.order_num: order for order in filtered_orders}
 
-        for i, order in enumerate(filtered_orders):
+        self.orders_table.setRowCount(len(unique_orders))
+
+        for i, order in enumerate(unique_orders.values()):
             item_order_num = QTableWidgetItem(f"{order.order_num}")
             item_order_num.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.orders_table.setItem(i, 0, item_order_num)
@@ -52,9 +57,9 @@ class Order_List_Window(QWidget):
             item_time.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.orders_table.setItem(i, 2, item_time)
 
-            item_price = QTableWidgetItem(f"{order.price}")
-            item_price.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.orders_table.setItem(i, 3, item_price)
+            item_date = QTableWidgetItem(f"{order.date}")
+            item_date.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.orders_table.setItem(i, 3, item_date)
 
             item_status = QTableWidgetItem(f"{order.status_name}")
             item_status.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -66,7 +71,7 @@ class Order_List_Window(QWidget):
                 self.orders_table.setColumnWidth(1, 50)
                 self.orders_table.setColumnWidth(2, 80)
                 self.orders_table.setColumnWidth(5, 150)
-                self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Сумма", "Статус", "Официант"])
+                self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Дата", "Статус", "Официант"])
                 item_worker = QTableWidgetItem(f"{order.worker.first_name} {order.worker.last_name}")
                 item_worker.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.orders_table.setItem(i, 5, item_worker)
@@ -74,7 +79,7 @@ class Order_List_Window(QWidget):
         self.orders_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.orders_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
 
-        self.orders_table.cellDoubleClicked.connect(lambda: open_order_details_window(self, id_order=filtered_orders[self.orders_table.currentRow()].id_order))
+        self.orders_table.cellDoubleClicked.connect(lambda: open_order_edit_window(self, id_order=filtered_orders[self.orders_table.currentRow()].id_order))
 
         exit_layout = QHBoxLayout()
         exit_layout.addStretch()
