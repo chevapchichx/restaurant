@@ -18,8 +18,8 @@ class Order_List_Window(QWidget):
 
     def UI_Order_List_Window(self):
         self.setWindowTitle("Текущие заказы")
-        self.setGeometry(100, 100, 600, 450)
-        self.setFixedSize(600, 450)
+        self.setGeometry(400, 230, 650, 450)
+        self.setFixedSize(650, 450)
 
         main_layout = QVBoxLayout(self)
 
@@ -37,8 +37,9 @@ class Order_List_Window(QWidget):
         top_layout.addWidget(self.info_button)
 
         self.orders_table = QTableWidget()
-        self.orders_table.setColumnCount(5)
-        self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Дата", "Статус"])
+        self.orders_table.setColumnCount(6)
+        self.orders_table.setColumnWidth(0, 80)
+        self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Дата", "Гости", "Статус"])
 
         filtered_orders = [order for order in self.orders if order.status != Order_Status.CLOSED]
         unique_orders = {order.order_num: order for order in filtered_orders}
@@ -62,20 +63,27 @@ class Order_List_Window(QWidget):
             item_date.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.orders_table.setItem(i, 3, item_date)
 
+            item_guests = QTableWidgetItem(f"{order.guests}")
+            item_guests.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.orders_table.setItem(i, 4, item_guests)
+
             item_status = QTableWidgetItem(f"{order.status_name}")
             item_status.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.orders_table.setItem(i, 4, item_status)
+            self.orders_table.setItem(i, 5, item_status)
 
             if self.user.role == User_Role.ADMIN:
-                self.orders_table.setColumnCount(6)
-                self.orders_table.setColumnWidth(0, 50)
-                self.orders_table.setColumnWidth(1, 50)
-                self.orders_table.setColumnWidth(2, 80)
-                self.orders_table.setColumnWidth(5, 150)
-                self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Дата", "Статус", "Официант"])
+                self.orders_table.setColumnCount(7)
+                self.orders_table.setColumnWidth(0, 60)
+                self.orders_table.setColumnWidth(1, 60)
+                self.orders_table.setColumnWidth(2, 90)
+                self.orders_table.setColumnWidth(3, 95)
+                self.orders_table.setColumnWidth(4, 60)
+                self.orders_table.setColumnWidth(5, 100)
+                self.orders_table.setColumnWidth(6, 120)
+                self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Дата", "Гости", "Статус", "Официант"])
                 item_worker = QTableWidgetItem(f"{order.worker.first_name} {order.worker.last_name}")
                 item_worker.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.orders_table.setItem(i, 5, item_worker)
+                self.orders_table.setItem(i, 6, item_worker)
 
         self.orders_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.orders_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)

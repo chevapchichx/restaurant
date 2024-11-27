@@ -14,7 +14,7 @@ class User_Info_Window(QWidget):
 
     def UI_UserInfoWindow(self):
         self.setWindowTitle("Информация о сотруднике")
-        self.setGeometry(420, 230, 650, 450)
+        self.setGeometry(400, 230, 650, 450)
         self.setFixedSize(650, 450)
 
         main_layout = QVBoxLayout(self)

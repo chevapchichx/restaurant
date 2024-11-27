@@ -7,12 +7,8 @@ from data.table_data import *
 from PyQt6.QtWidgets import QMessageBox
 
 class Order_Service:
-class Order_Service:
-
-    def get_orders(self, id_worker, role):
     def get_orders(self, id_worker, role):
         data_service = Database_Service()
-        query = data_service.get_orders_db(id_worker, role)
         query = data_service.get_orders_db(id_worker, role)
         if query.error is None:
             result = query.result   
@@ -45,9 +41,7 @@ class Order_Service:
             return None
 
     def get_order_for_edit(self, id_order):
-    def get_order_for_edit(self, id_order):
         data_service = Database_Service()
-        query = data_service.get_order_for_edit_db(id_order)
         query = data_service.get_order_for_edit_db(id_order)
         if query.error is None:
             result = query.result

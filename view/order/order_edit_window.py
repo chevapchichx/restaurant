@@ -21,7 +21,7 @@ class Order_Edit_Window(QDialog):
 
         top_layout = QHBoxLayout()
         top_layout.addStretch() 
-        self.table_label = QLabel(f"Стол {self.order.table.id_table}, Количество гостей: {self.order.table.number_of_seats}")
+        self.table_label = QLabel(f"Стол {self.order.table.id_table}, Количество гостей: {self.order.guests}")
         self.table_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         top_layout.addWidget(self.table_label)
         top_layout.addStretch() 
