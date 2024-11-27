@@ -19,16 +19,17 @@ class Order:
     def status(self):
         return self.__status
 
-    def __init__(self, id_order, order_num, worker, table, order_date, order_time, order_status, dishes):
+    def __init__(self, id_order, order_num, guests, worker, table, order_date, order_time, order_status, dishes, total_sum):
         self.id_order = int(id_order)
         self.order_num = int(order_num)
+        self.guests = int(guests)
         self.worker = worker
-        self.table = int(table)
+        self.table = table
         self.date = order_date
         self.time = order_time
         self.__status = int(order_status)
         self.dishes = dishes
-
+        self.total_sum = float(total_sum)
 
     def __get_status_name(self):
         if self.status == Order_Status.CREATED:

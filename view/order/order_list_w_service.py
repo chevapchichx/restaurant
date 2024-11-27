@@ -4,6 +4,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from service.user_service import *
 from service.order_service import *
 
+
 def open_auth_window(self):
     from view.user.auth_window import Auth_Window
     self.auth_window = Auth_Window()

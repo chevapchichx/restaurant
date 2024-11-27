@@ -16,7 +16,7 @@ class Dish:
     def status(self):
         return self.__status
 
-    def __init__(self, id_dish, dish_name, price, weight, photo, menu_category, dish_status, amount):
+    def __init__(self, id_dish, dish_name, price, weight, photo, menu_category, dish_status, amount, dish_sum):
         self.id_dish = int(id_dish)
         self.dish_name = str(dish_name)
         self.price = round(float(price), 2)
@@ -25,6 +25,7 @@ class Dish:
         self.menu_category = menu_category
         self.__status = int(dish_status)
         self.amount = round(float(amount), 2)
+        self.dish_sum = round(float(dish_sum), 2)
 
     def __get_status_name(self):
         if self.status == Dish_Status.CREATED:
