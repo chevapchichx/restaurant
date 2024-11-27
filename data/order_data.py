@@ -1,6 +1,4 @@
-# from user_data import *
 from enum import IntEnum
-from data.user_data import User
 
 class Order_Status(IntEnum):
     CREATED = 1

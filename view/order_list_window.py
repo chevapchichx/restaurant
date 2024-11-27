@@ -1,11 +1,10 @@
-
 from PyQt6.QtWidgets import (QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem)
 from PyQt6.QtCore import Qt
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from view.order.order_list_w_service import *
-from view.order.order_edit_w_service import *
+sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from order_list_w_service import *
+from order_edit_w_service import *
 from service.user_service import *
 from service.order_service import *
 

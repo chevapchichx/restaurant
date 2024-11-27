@@ -3,8 +3,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from data.user_data import *
-from service.database_service import *
-from service.singleton import *
+from .database_service import *
+from .singleton import *
 
 class User_Service(metaclass=SingletonMeta):
     __user: User = None

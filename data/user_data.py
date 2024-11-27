@@ -1,5 +1,4 @@
 from enum import IntEnum
-from datetime import date
 
 class User_Role(IntEnum):
     WAITER = 1
