@@ -1,0 +1,1 @@
+db_url = 'mysql+mysqlconnector://root:root@localhost:8889/restaurant'

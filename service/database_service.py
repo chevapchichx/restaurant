@@ -3,10 +3,11 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from data.query_result_data import *
-from data.user_data import User_Role 
+from data.user_data import User_Role
+from config import db_url
 
 class Database_Service():
-    __engine = create_engine('mysql+mysqlconnector://root:root@localhost:8889/restaurant')
+    __engine = create_engine(db_url)
 
     def get_user_db(self, login):
         try:
