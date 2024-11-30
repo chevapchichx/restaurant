@@ -1,0 +1,2 @@
+[database]
+db_url = mysql+pymysql://root:root@localhost:8889/restaurant

@@ -1,10 +1,12 @@
 from sqlalchemy import create_engine, text
-import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from data.query_result_data import *
 from data.user_data import User_Role
-from config import db_url
+import configparser
+
+config = configparser.ConfigParser()
+config.read(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'config.txt'))
+db_url = config['database']['db_url']
 
 class Database_Service():
     __engine = create_engine(db_url)

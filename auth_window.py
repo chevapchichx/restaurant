@@ -1,6 +1,5 @@
 import sys
-import os
-from auth_w_service import *
+from view.auth_w_service import *
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout
 
 class Auth_Window(QWidget):

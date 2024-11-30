@@ -2,8 +2,7 @@ from PyQt6.QtWidgets import QSpinBox, QHBoxLayout, QLabel, QPushButton, QApplica
 from PyQt6.QtCore import Qt
 import sys
 import os
-sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from order_edit_w_service import *
+from view.order_edit_w_service import *
 from service.order_service import Order_Service
 
 class Order_Edit_Window(QDialog):
@@ -19,12 +18,11 @@ class Order_Edit_Window(QDialog):
 
         main_layout = QVBoxLayout(self)
 
-        # Создаем горизонтальный макет для метки table_label и добавляем его в основной макет
         top_layout = QHBoxLayout()
-        self.table_label = QLabel(f"Стол {self.order.table.id_table}, Количество гостей: {self.order.table.number_of_seats}")
+        self.table_label = QLabel(f"Стол {self.order.table.id_table}, Количество гостей: {self.order.guests}")
         self.table_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         top_layout.addWidget(self.table_label)
-        top_layout.addStretch()  # Добавляем растяжку справа
+        top_layout.addStretch()  
         main_layout.addLayout(top_layout)
 
         label_layout = QVBoxLayout()

@@ -1,10 +1,9 @@
 import sys
 import os
-sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from data.order_data import *
 from data.user_data import User
-from .database_service import *
-from .singleton import *
+from service.database_service import *
+from service.singleton import *
 from data.dish_data import *
 from data.menu_category_data import *
 from data.table_data import *

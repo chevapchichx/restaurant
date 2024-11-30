@@ -1,11 +1,7 @@
 from PyQt6.QtWidgets import (QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem)
 from PyQt6.QtCore import Qt
-import sys
-import os
-sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from order_list_w_service import *
-from order_edit_w_service import *
-from service.user_service import *
+from view.order_list_w_service import open_auth_window, open_user_info_window, open_order_edit_window
+from service.user_service import User_Service, User_Role
 from service.order_service import *
 
 class Order_List_Window(QWidget):

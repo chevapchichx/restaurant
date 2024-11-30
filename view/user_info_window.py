@@ -2,8 +2,8 @@ from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QVBoxLa
 from PyQt6.QtCore import Qt
 import sys
 import os
-sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from user_info_w_service import *
+from service.user_service import User_Service
+from view.user_info_w_service import open_order_list_window
 
 class User_Info_Window(QWidget):
     def __init__(self):

@@ -21,6 +21,7 @@ iniconfig==2.0.0
 kiwisolver==1.4.7
 login==0.0.6
 macholib==1.16.3
+mariadb==1.1.11
 matplotlib==3.9.2
 mysql-connector-python==9.1.0
 numpy==1.26.4
@@ -45,7 +46,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 qemu==0.0.0a1
 requests==2.32.3
--e git+https://github.com/chevapchichx/restaurant.git@554492188e40d0d1ea87e2491bc11af9435835e7#egg=restaurant
+-e git+https://github.com/chevapchichx/restaurant.git@6cf108954a652f1ccc8dfa55090b7ce28e7ae4f2#egg=restaurant
 selenium==4.25.0
 setuptools==70.0.0
 six==1.16.0
