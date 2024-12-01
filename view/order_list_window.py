@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem)
 from PyQt6.QtCore import Qt
-from view.order_list_w_service import open_auth_window, open_user_info_window, open_order_edit_window
+from view.order_list_w_service import *
 from service.user_service import User_Service, User_Role
 from service.order_service import *
 
@@ -96,12 +96,10 @@ class Order_List_Window(QWidget):
         main_layout.addWidget(self.orders_table)
         main_layout.addLayout(exit_layout)
 
-        self.add_order_button.clicked.connect(self.open_manage_orders_window)
+        self.add_order_button.clicked.connect(lambda: create_new_order(self, id_worker=self.user.id_worker))
         self.info_button.clicked.connect(lambda: open_user_info_window(self))
         self.exit_button.clicked.connect(lambda: open_auth_window(self))
 
-    def open_manage_orders_window(self):
-        print("Открытие окна управления заказами")
 
 # if __name__ == "__main__":
 #     app = QApplication(sys.argv)

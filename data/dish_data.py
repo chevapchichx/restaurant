@@ -24,12 +24,12 @@ class Dish:
         self.photo = str(photo)
         self.menu_category = menu_category
         self.__status = int(dish_status)
-        self.amount = round(float(amount), 2)
+        self.amount = int(amount)
         self.dish_sum = round(float(dish_sum), 2)
 
     def __get_status_name(self):
         if self.status == Dish_Status.CREATED:
-            return "Создан"
+            return "Добавлен"
         if self.status == Dish_Status.COOKING:
             return "Готовится"
         if self.status == Dish_Status.COOKED:

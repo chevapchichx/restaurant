@@ -52,9 +52,9 @@ class Order_Service:
                 query = data_service.get_dishes_from_order_db(id_order)
                 if query.error is None:
                     dishes_result = query.result
+                    dishes = []
+                    total_sum = 0
                     if dishes_result:
-                        dishes = []
-                        total_sum = 0
                         for row in dishes_result:
                             dish_sum = row[2] * row[8] 
                             total_sum += dish_sum 
@@ -89,6 +89,62 @@ class Order_Service:
                     return order
             QMessageBox.critical(None, "Ошибка", "Заказ не найден")
             return None
+        else:
+            QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
+            return None
+
+    def create_new_order(self, id_worker):
+        data_service = Database_Service()
+        query = data_service.create_new_order_db(id_worker)
+        if query.error is None:
+            return query.result
+        else:
+            QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
+            return None
+
+    def get_is_table_occupied(self, table_id):
+        data_service = Database_Service()
+        query = data_service.get_is_table_occupied_db(table_id)
+        if query.error is None:
+            return query.result
+        else:
+            QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
+            return None
+
+    def get_table_capacity(self, table_id):
+        data_service = Database_Service()
+        query = data_service.get_table_capacity_db(table_id)
+        if query.error is None:
+            return query.result
+        else:
+            QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
+            return None
+    
+    def add_order(self, id_order, table_id, guests):
+        data_service = Database_Service()
+        query = data_service.add_order_db(id_order, table_id, guests)
+        if query.error is None:
+            result = query.result
+            if result:
+                order = Order(
+                    id_order=result[0],
+                    order_num=result[1],
+                    guests=result[2],
+                    worker=User(
+                        id_worker=result[3],
+                        role=0, job=None, last_name=None, first_name=None, middle_name=None, birth_date=None, address=None, phone_number=None, salary=0, login=None, password=None),
+                    table=Table(
+                        id_table=result[4],
+                        number_of_seats=0),
+                    order_date=result[5],
+                    order_time=result[6],
+                    order_status=result[7],
+                    dishes=[],
+                    total_sum=0)
+                return order
+            else:
+                QMessageBox.critical(None, "Ошибка", "Не удалось добавить заказ")
+                return None
         else:
             QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
             return None

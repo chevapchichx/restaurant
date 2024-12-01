@@ -75,17 +75,76 @@ class Database_Service():
         except Exception as e:
             return Query_Result(None, e)
     
-    # def get_meal_by_id_db(self, id_meal):
-    #     try:
-    #         with self.__engine.connect() as conn:
-    #             query = text("""
-    #                 SELECT m.id_meal, m.meal, m.price, m.weight, m.photo, m.id_menu_section
-    #                 FROM menu m, orders o
-    #                 WHERE o.id_meal = :id_meal""")
-    #             result = conn.execute(query, {"id_meal": id_meal}).fetchone()
-    #             return Query_Result(result, None)
-    #     except Exception as e:
-    #         return Query_Result(None, e)
+    def create_new_order_db(self, id_worker):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    INSERT INTO orders (id_worker, order_date, order_time, guests)
+                    VALUES (:id_worker, CURDATE(), CURTIME(), 0)
+                """)
+                conn.execute(query, {"id_worker": id_worker})
+
+                select_query = text("SELECT LAST_INSERT_ID() AS last_id")
+                result = conn.execute(select_query).fetchone()
+                order_id = result[0]  
+
+                update_query = text("""
+                    UPDATE orders
+                    SET order_num = :order_id
+                    WHERE id = :order_id
+                """)
+                conn.execute(update_query, {"order_id": order_id})
+
+                return Query_Result(order_id, None)
+        except Exception as e:
+            return Query_Result(None, e)
+
+    def get_is_table_occupied_db(self, table_id):
+        try:
+            with self.__engine.connect() as conn:
+                query = text("""
+                    SELECT COUNT(*)
+                    FROM orders
+                    WHERE id_table = :table_id AND order_status != 3
+                """)
+                result = conn.execute(query, {"table_id": table_id}).fetchone()
+                return Query_Result(result[0] > 0, None)
+        except Exception as e:
+            return Query_Result(None, e)
+
+    def get_table_capacity_db(self, table_id):
+        try:
+            with self.__engine.connect() as conn:
+                query = text("""
+                    SELECT number_of_seats
+                    FROM tables
+                    WHERE id = :table_id
+                """)
+                result = conn.execute(query, {"table_id": table_id}).fetchone()
+                return Query_Result(result[0], None)
+        except Exception as e:
+            return Query_Result(None, e)
+    
+    def add_order_db(self, id_order, table_id, guests):
+        try:
+            with self.__engine.begin() as conn:
+                update_query = text("""
+                    UPDATE orders
+                    SET id_table = :table_id, guests = :guests
+                    WHERE id = :id_order
+                """)
+                conn.execute(update_query, {
+                    "table_id": table_id,
+                    "guests": guests,
+                    "id_order": id_order
+                })
+
+                select_query = text("SELECT * FROM orders WHERE id = :id_order")
+                result = conn.execute(select_query, {"id_order": id_order}).fetchone()
+                if result is None:
+                    return Query_Result(result, None)
+        except Exception as e:
+            return Query_Result(None, e)
 
 
 
