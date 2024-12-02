@@ -28,10 +28,9 @@ def update_table_buttons(self):
 def add_order_in_window(self, id_order, table_id, guests):
     order_service = Order_Service()
     order = order_service.add_order(id_order, table_id, guests)
-    if order is None:
-        QMessageBox.critical(self, "Ошибка", "Не удалось добавить заказ")
-    else:
-        QMessageBox.information(self, "Успех", "Заказ добавлен")
+    if order is not None:
         self.order_edit_window = Order_Edit_Window(order.id_order)
         self.order_edit_window.show()
         self.close()
+    else:
+        QMessageBox.critical(self, "Ошибка", "Заказ не добавлен")

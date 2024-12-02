@@ -1,2 +1,2 @@
 [database]
-db_url = mysql+pymysql://root:root@localhost:8889/restaurant
+db_url = mysql+pymysql://chevapchich:chevapchichroot3_@109.196.102.132:3306/restaurant

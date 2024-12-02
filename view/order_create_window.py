@@ -5,11 +5,12 @@ from view.order_create_w_service import *
 
 
 class Order_Create_Window(QWidget):
-    def __init__(self, order_num):
+    def __init__(self, id_order, order_num):
         super().__init__()
         self.order_service = Order_Service()
         self.selected_table = None
         self.selected_guests = 0
+        self.id_order = id_order
         self.order_num = order_num
         self.UI_Order_Create_Window()
 
@@ -75,7 +76,7 @@ class Order_Create_Window(QWidget):
         # if self.selected_table is None or self.selected_guests == 0:
         #     self.next_button.setEnabled(False)
         # else:
-        self.next_button.clicked.connect(lambda: add_order_in_window(self, id_order=self.order_num, table_id=self.selected_table, guests=self.selected_guests))
+        self.next_button.clicked.connect(lambda: add_order_in_window(self, id_order=self.id_order, table_id=self.selected_table, guests=self.selected_guests))
 
             
 

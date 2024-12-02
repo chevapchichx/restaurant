@@ -16,3 +16,4 @@ data/__pycache__/order_data.cpython-312.pyc
 service/__pycache__/order_service.cpython-312.pyc
 view/order/__pycache__/order_details_w_service.cpython-312.pyc
 view/order/__pycache__/order_details_window.cpython-312.pyc
+config.txt

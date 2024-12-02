@@ -21,17 +21,16 @@ def open_user_info_window(self):
 
 def open_order_edit_window(self, id_order):
     self.order_details_window = Order_Edit_Window(id_order)
-    self.order_details_window.exec()
+    self.order_details_window.show()
+    self.close()
 
 def create_new_order(self, id_worker):
     from view.order_create_window import Order_Create_Window
     order_service = Order_Service()
     # user = User_Service().authorised_user
-    new_order_id = order_service.create_new_order(id_worker)
-    if new_order_id:
-        order_num = new_order_id
-        QMessageBox.information(self, "Успех", f"Новый заказ создан с номером: {order_num}")
-        self.create_order_window = Order_Create_Window(order_num)
+    new_order = order_service.create_new_order(id_worker)
+    if new_order:
+        self.create_order_window = Order_Create_Window(new_order[0], new_order[1])
         self.create_order_window.show()
         self.close()
     else:

@@ -97,7 +97,8 @@ class Order_Service:
         data_service = Database_Service()
         query = data_service.create_new_order_db(id_worker)
         if query.error is None:
-            return query.result
+            result = query.result
+            return result
         else:
             QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
             return None
@@ -145,6 +146,24 @@ class Order_Service:
             else:
                 QMessageBox.critical(None, "Ошибка", "Не удалось добавить заказ")
                 return None
+        else:
+            QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
+            return None
+    
+    def update_dish_amount(self, order):
+        data_service = Database_Service()
+        query = data_service.update_dish_amount_db(order)
+        if query.error is None:
+            QMessageBox.information(None, "Успех", "Заказ обновлен")
+        else:
+            QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
+            return None
+    
+    def delete_dish(self, dish):
+        data_service = Database_Service()
+        query = data_service.delete_dish_db(dish)
+        if query.error is None:
+            QMessageBox.information(None, "Успех", "Блюдо удалено")
         else:
             QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
             return None

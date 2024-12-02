@@ -32,6 +32,7 @@ pillow==10.3.0
 pluggy==1.5.0
 pyinstaller==6.11.1
 pyinstaller-hooks-contrib==2024.10
+PyMySQL==1.1.1
 pyparsing==3.2.0
 PyQt5==5.15.11
 PyQt5-Qt5==5.15.15
@@ -46,7 +47,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 qemu==0.0.0a1
 requests==2.32.3
--e git+https://github.com/chevapchichx/restaurant.git@6cf108954a652f1ccc8dfa55090b7ce28e7ae4f2#egg=restaurant
+-e git+https://github.com/chevapchichx/restaurant.git@2e5e3ad513da7b0776b3209e7df61f0dc2a4b0d7#egg=restaurant
 selenium==4.25.0
 setuptools==70.0.0
 six==1.16.0

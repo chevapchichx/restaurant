@@ -88,14 +88,23 @@ class Database_Service():
                 result = conn.execute(select_query).fetchone()
                 order_id = result[0]  
 
+                get_max_order_num_query = text("SELECT MAX(order_num) FROM orders where order_status < 4")
+                result = conn.execute(get_max_order_num_query).fetchone()
+                order_num = result[0] + 1
+                if order_num > 100:
+                    order_num = 1
+
                 update_query = text("""
                     UPDATE orders
-                    SET order_num = :order_id
+                    SET order_num = :order_num
                     WHERE id = :order_id
                 """)
-                conn.execute(update_query, {"order_id": order_id})
-
-                return Query_Result(order_id, None)
+                conn.execute(update_query, {
+                    "order_id": order_id, 
+                    "order_num": order_num
+                    })
+                result = conn.execute(text("SELECT id, order_num FROM orders WHERE id = :order_id"), {"order_id": order_id}).fetchone()
+                return Query_Result(result, None)
         except Exception as e:
             return Query_Result(None, e)
 
@@ -138,11 +147,41 @@ class Database_Service():
                     "guests": guests,
                     "id_order": id_order
                 })
-
-                select_query = text("SELECT * FROM orders WHERE id = :id_order")
+                select_query = text("SELECT id, order_num, guests, id_worker, id_table, order_date, order_time, order_status FROM orders WHERE id = :id_order")
                 result = conn.execute(select_query, {"id_order": id_order}).fetchone()
-                if result is None:
-                    return Query_Result(result, None)
+            return Query_Result(result, None)
+        except Exception as e:
+            return Query_Result(None, e)
+    
+    def update_dish_amount_db(self, order):
+        try:
+            with self.__engine.begin() as conn:
+                update_query = text("""
+                    UPDATE orders_menu 
+                    SET amount = :amount
+                    WHERE id_dish = :id_dish AND id_order = :id_order
+                """)
+                for dish in order.dishes:
+                    conn.execute(update_query, {
+                        "amount": dish.amount,
+                        "id_dish": dish.id_dish,
+                        "id_order": order.id_order
+                    })
+                    print(f"Updated dish: {dish.dish_name}, amount: {dish.amount}")
+                return Query_Result(None, None)
+        except Exception as e:
+            print(f"Error updating order: {e}")
+            return Query_Result(None, e)
+    
+    def delete_dish_db(self, dish):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    DELETE FROM orders_menu
+                    WHERE id_dish = :id_dish
+                """)
+                conn.execute(query, {"id_dish": dish.id_dish})
+                return Query_Result(None, None)
         except Exception as e:
             return Query_Result(None, e)
 
