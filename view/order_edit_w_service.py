@@ -8,8 +8,10 @@ from functools import partial
 def open_order_list_window(self):
     from view.order_list_window import Order_List_Window
     self.waiter_window = Order_List_Window()
-    self.waiter_window.show()
     self.close()
+    # self.waiter_window.show()
+
+    
 
 def update_total_sum(self):
     total_sum = 0

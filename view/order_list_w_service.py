@@ -7,7 +7,6 @@ from view.order_edit_window import *
 from view.user_info_window import *
 from auth_window import *
 
-
 def open_auth_window(self):
     from auth_window import Auth_Window
     self.auth_window = Auth_Window()
@@ -21,8 +20,7 @@ def open_user_info_window(self):
 
 def open_order_edit_window(self, id_order):
     self.order_details_window = Order_Edit_Window(id_order)
-    self.order_details_window.show()
-    self.close()
+    self.order_details_window.exec()
 
 def create_new_order(self, id_worker):
     from view.order_create_window import Order_Create_Window

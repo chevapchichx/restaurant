@@ -3,10 +3,11 @@ from PyQt6.QtCore import Qt
 import sys
 import os
 from functools import partial
+sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) #test
 from view.order_edit_w_service import *
 from service.order_service import Order_Service, Dish_Status
 
-class Order_Edit_Window(QWidget):
+class Order_Edit_Window(QDialog):
     def __init__(self, id_order):
         super().__init__()
         self.order = Order_Service().get_order_for_edit(id_order)
@@ -14,8 +15,8 @@ class Order_Edit_Window(QWidget):
 
     def UI_Order_Edit_Window(self):
         self.setWindowTitle(f"Детали заказа {self.order.order_num}")
-        self.setGeometry(400, 230, 650, 450)
-        self.setFixedSize(650, 450)
+        self.setGeometry(470, 300, 500, 300)
+        self.setFixedSize(500, 300)
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(10, 20, 10, 10)
@@ -28,16 +29,16 @@ class Order_Edit_Window(QWidget):
         main_layout.addLayout(top_layout)
 
         self.label_layout = QGridLayout()
-        self.label_layout.setHorizontalSpacing(25)
+        self.label_layout.setHorizontalSpacing(40)
         self.label_layout.setVerticalSpacing(10)
-        # main_layout.addLayout(self.label_layout)
+        
 
         self.total_sum_label = QLabel(f"Сумма: {self.order.total_sum} руб.")
 
-        self.update_dishes_layout()
+        self.ui_update_dishes_layout()
 
         button_layout = QHBoxLayout()
-        button_layout.addStretch()
+        # button_layout.addStretch()
 
         button_layout.addWidget(self.total_sum_label)
 
@@ -56,7 +57,7 @@ class Order_Edit_Window(QWidget):
         main_layout.addLayout(button_layout)
         self.setLayout(main_layout)
 
-    def update_dishes_layout(self):
+    def ui_update_dishes_layout(self):
         for i in reversed(range(self.label_layout.count())):
             widget = self.label_layout.itemAt(i).widget()
             if widget:

@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QMessageBox
 from service.order_service import *
 from view.order_edit_window import *
+from view.order_list_window import Order_List_Window
 
 def update_table_button(self, button):
     table_id = int(button.text())
@@ -30,6 +31,8 @@ def add_order_in_window(self, id_order, table_id, guests):
     order = order_service.add_order(id_order, table_id, guests)
     if order is not None:
         self.order_edit_window = Order_Edit_Window(order.id_order)
+        self.order_list_window = Order_List_Window()
+        self.order_list_window.show()
         self.order_edit_window.show()
         self.close()
     else:

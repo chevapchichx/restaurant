@@ -10,6 +10,10 @@ class Order:
     __status = 0
 
     @property
+    def full_date(self):
+        return f"{self.date} {self.time}"
+
+    @property
     def status_name(self):
         return self.__get_status_name()
     

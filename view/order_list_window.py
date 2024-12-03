@@ -8,7 +8,7 @@ class Order_List_Window(QWidget):
     def __init__(self):
         super().__init__()
         self.user = User_Service().authorised_user
-        self.orders = sorted(Order_Service().get_orders(self.user.id_worker, self.user.role), key=lambda order: order.date, reverse=True)
+        self.orders = sorted(Order_Service().get_orders(self.user.id_worker, self.user.role), key=lambda order: order.full_date, reverse=True)
         self.UI_Order_List_Window()
 
     def UI_Order_List_Window(self):
