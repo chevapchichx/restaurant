@@ -184,6 +184,30 @@ class Database_Service():
                 return Query_Result(None, None)
         except Exception as e:
             return Query_Result(None, e)
+        
+    def get_menu_categories_db(self):
+        try:
+            with self.__engine.connect() as conn:
+                query = text("""
+                    SELECT category
+                    FROM menu_category
+                """)
+                result = conn.execute(query).fetchall()
+                return Query_Result(result, None)
+        except Exception as e:
+            return Query_Result(None, e)
 
+    def get_dishes_by_category_db(self, category):
+        try:
+            with self.__engine.connect() as conn:
+                query = text("""
+                    SELECT id, dish, price, weight, photo, id_menu_category
+                    FROM menu
+                    WHERE id_menu_category = (SELECT id FROM menu_category WHERE category = :category)
+                """)
+                result = conn.execute(query, {"category": category}).fetchall()
+                return Query_Result(result, None)
+        except Exception as e:
+            return Query_Result(None, e)
 
 

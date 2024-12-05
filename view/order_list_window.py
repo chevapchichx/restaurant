@@ -90,6 +90,7 @@ class Order_List_Window(QWidget):
         exit_layout.addWidget(self.exit_button)
 
         if self.user.role == User_Role.ADMIN:
+            self.add_order_button.hide()
             exit_layout.addWidget(self.button_1)
 
         main_layout.addLayout(top_layout)

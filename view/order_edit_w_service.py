@@ -1,6 +1,7 @@
 import sys
 import os
 from service.order_service import *
+from service.dish_service import Dish_Service
 from PyQt6.QtWidgets import QLabel, QPushButton, QSpinBox, QMessageBox
 from PyQt6.QtCore import Qt
 from functools import partial
@@ -10,8 +11,6 @@ def open_order_list_window(self):
     self.waiter_window = Order_List_Window()
     self.close()
     # self.waiter_window.show()
-
-    
 
 def update_total_sum(self):
     total_sum = 0
@@ -45,6 +44,17 @@ def delete_dish(self, dish):
         self.update_dishes_layout() 
     else:
         pass
+
+def update_dishes_combobox(self):
+    category = self.choose_category_combobox.currentText()
+    if category == "None":
+        self.choose_dish_combobox.clear()
+        self.choose_dish_combobox.addItem("None")
+    else:
+        dishes = Dish_Service().get_dishes_by_category(category)
+        self.choose_dish_combobox.clear()
+        self.choose_dish_combobox.addItem("None")
+        self.choose_dish_combobox.addItems([dish.dish_name for dish in dishes])
 
 
 

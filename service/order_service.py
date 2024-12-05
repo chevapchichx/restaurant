@@ -107,7 +107,8 @@ class Order_Service:
         data_service = Database_Service()
         query = data_service.get_is_table_occupied_db(table_id)
         if query.error is None:
-            return query.result
+            result = query.result
+            return result
         else:
             QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
             return None
@@ -154,7 +155,7 @@ class Order_Service:
         data_service = Database_Service()
         query = data_service.update_dish_amount_db(order)
         if query.error is None:
-            QMessageBox.information(None, "Успех", "Заказ обновлен")
+            return True
         else:
             QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
             return None

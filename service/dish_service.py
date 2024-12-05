@@ -1,7 +1,40 @@
-# from service.database_service import Database_Service
-# from data.dish_data import Dish
+from service.database_service import Database_Service
+from data.dish_data import Dish
 
-# class Meal_Service():
+class Dish_Service():
+    def get_menu_categories(self):
+        data_service = Database_Service()
+        query = data_service.get_menu_categories_db()
+        if query.error is None:
+            result = query.result
+            if result:
+                categories = [row[0] for row in result]
+                return categories
+            else:
+                return "Категории не найдены"
+        else:
+            return f"Ошибка подключения к базе данных: {query.error}"
+    
+    def get_dishes_by_category(self, category):
+        data_service = Database_Service()
+        query = data_service.get_dishes_by_category_db(category)
+        if query.error is None:
+            result = query.result
+            if result:
+                dishes = [Dish(
+                    id_dish=row[0],
+                    dish_name=row[1],
+                    price=row[2],
+                    weight=row[3],
+                    photo=row[4],
+                    menu_category=row[5],
+                    dish_status=0, amount=0, dish_sum=0)
+                    for row in result]
+                return dishes
+            else:
+                return "Блюда не найдены"
+        else:
+            return f"Ошибка подключения к базе данных: {query.error}"
 
 #     def fill_meals_by_order(self, id_order):
 #         data_service = Database_Service()
