@@ -43,13 +43,13 @@ class Order_Edit_Window(QDialog):
 
         self.add_dish_layout = QGridLayout()
         self.choose_category_combobox = QComboBox()
-        self.choose_category_combobox.addItem("None")
+        self.choose_category_combobox.addItem("Не выбрано")
         self.choose_category_combobox.addItems(Dish_Service().get_menu_categories())
         self.choose_category_combobox.currentIndexChanged.connect(lambda: update_dishes_combobox(self))
         self.add_dish_layout.addWidget(self.choose_category_combobox, 0, 0)
 
         self.choose_dish_combobox = QComboBox()
-        self.choose_dish_combobox.addItem("None")
+        self.choose_dish_combobox.addItem("Не выбрано")
         self.add_dish_layout.addWidget(self.choose_dish_combobox, 0, 1)
 
 

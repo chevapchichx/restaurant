@@ -47,13 +47,13 @@ def delete_dish(self, dish):
 
 def update_dishes_combobox(self):
     category = self.choose_category_combobox.currentText()
-    if category == "None":
+    if category == "Не выбрано":
         self.choose_dish_combobox.clear()
-        self.choose_dish_combobox.addItem("None")
+        self.choose_dish_combobox.addItem("Не выбрано")
     else:
         dishes = Dish_Service().get_dishes_by_category(category)
         self.choose_dish_combobox.clear()
-        self.choose_dish_combobox.addItem("None")
+        self.choose_dish_combobox.addItem("Не выбрано")
         self.choose_dish_combobox.addItems([dish.dish_name for dish in dishes])
 
 
