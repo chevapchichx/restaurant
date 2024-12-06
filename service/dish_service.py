@@ -12,8 +12,10 @@ class Dish_Service():
                 return categories
             else:
                 return "Категории не найдены"
+
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
+
     
     def get_dishes_by_category(self, category):
         data_service = Database_Service()
@@ -26,13 +28,31 @@ class Dish_Service():
                     dish_name=row[1],
                     price=row[2],
                     weight=row[3],
-                    photo=row[4],
-                    menu_category=row[5],
+                    menu_category=row[4],
                     dish_status=0, amount=0, dish_sum=0)
                     for row in result]
                 return dishes
             else:
                 return "Блюда не найдены"
+        else:
+            return f"Ошибка подключения к базе данных: {query.error}"
+    
+    def get_dish_by_name(self, dish_name):
+        data_service = Database_Service()
+        query = data_service.get_dish_by_name_db(dish_name)
+        if query.error is None:
+            result = query.result
+            if result:
+                dish = Dish(
+                    id_dish=result[0],
+                    dish_name=result[1],
+                    price=result[2],
+                    weight=result[3],
+                    menu_category=result[4],
+                    dish_status=1, amount=1, dish_sum=0)
+                return dish
+            else:
+                return None
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
 
@@ -47,7 +67,7 @@ class Dish_Service():
 #                     dish_name=row[1],
 #                     price=row[2],
 #                     weight=row[3],
-#                     photo=row[4],
+#                     =row[4],
 #                     menu_section=row[5])
 #                     for row in result]
 #                 return meals
@@ -67,7 +87,7 @@ class Dish_Service():
     #                 meal_name=result[1],
     #                 price=result[2],
     #                 weight=result[3],
-    #                 photo=result[4],
+    #                 =result[4],
     #                 id_menu_section=result[5])
     #             return meal
     #         else:

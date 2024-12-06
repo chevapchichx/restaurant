@@ -63,7 +63,7 @@ class Database_Service():
         try:
             with self.__engine.connect() as conn:
                 query = text("""
-                    SELECT m.id, m.dish, m.price, m.weight, m.photo, m.id_menu_category, mc.category, o_m.dish_status, o_m.amount
+                    SELECT m.id, m.dish, m.price, m.weight, m.id_menu_category, mc.category, o_m.dish_status, o_m.amount
                     FROM orders o
                     JOIN orders_menu o_m ON o.id = o_m.id_order
                     JOIN menu m ON m.id = o_m.id_dish
@@ -158,7 +158,7 @@ class Database_Service():
             with self.__engine.begin() as conn:
                 update_query = text("""
                     UPDATE orders_menu 
-                    SET amount = :amount
+                    SET amount = :amount, dish_status = 2 
                     WHERE id_dish = :id_dish AND id_order = :id_order
                 """)
                 for dish in order.dishes:
@@ -173,14 +173,20 @@ class Database_Service():
             print(f"Error updating order: {e}")
             return Query_Result(None, e)
     
-    def delete_dish_db(self, dish):
+    def delete_dish_db(self, dish, id_order):
         try:
             with self.__engine.begin() as conn:
                 query = text("""
                     DELETE FROM orders_menu
-                    WHERE id_dish = :id_dish
+                    WHERE id IN (
+                        SELECT id FROM (
+                            SELECT id FROM orders_menu
+                            WHERE id_dish = :id_dish AND dish_status = 1 AND id_order = :id_order
+                            LIMIT 1
+                        ) AS s
+                    )
                 """)
-                conn.execute(query, {"id_dish": dish.id_dish})
+                conn.execute(query, {"id_dish": dish.id_dish, "id_order": id_order})
                 return Query_Result(None, None)
         except Exception as e:
             return Query_Result(None, e)
@@ -201,12 +207,44 @@ class Database_Service():
         try:
             with self.__engine.connect() as conn:
                 query = text("""
-                    SELECT id, dish, price, weight, photo, id_menu_category
+                    SELECT id, dish, price, weight, id_menu_category
                     FROM menu
-                    WHERE id_menu_category = (SELECT id FROM menu_category WHERE category = :category)
+                    WHERE id_menu_category = (
+                        SELECT id
+                        FROM menu_category
+                        WHERE category = :category
+                    )
                 """)
                 result = conn.execute(query, {"category": category}).fetchall()
                 return Query_Result(result, None)
+        except Exception as e:
+            return Query_Result(None, e)
+    
+    def get_dish_by_name_db(self, dish_name):
+        try:
+            with self.__engine.connect() as conn:
+                query = text("""
+                    SELECT id, dish, price, weight, id_menu_category
+                    FROM menu 
+                    WHERE dish = :dish_name
+                """)
+                result = conn.execute(query, {"dish_name": dish_name}).fetchone()
+                return Query_Result(result, None)
+        except Exception as e:
+            return Query_Result(None, e)
+    
+    def add_dish_to_order_db(self, id_order, id_dish):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    INSERT INTO orders_menu (id_order, id_dish, amount, dish_status)
+                    VALUES (:id_order, :id_dish, 1, 1)
+                """)
+                conn.execute(query, {
+                    "id_order": id_order,
+                    "id_dish": id_dish
+                })
+                return Query_Result(None, None)
         except Exception as e:
             return Query_Result(None, e)
 

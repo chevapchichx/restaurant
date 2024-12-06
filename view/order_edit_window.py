@@ -19,40 +19,53 @@ class Order_Edit_Window(QDialog):
 
     def UI_Order_Edit_Window(self):
         self.setWindowTitle(f"Детали заказа {self.order.order_num}")
-        self.setGeometry(470, 300, 500, 300)
-        self.setFixedSize(500, 300)
+        self.setGeometry(470, 300, 500, 400)
+        self.setFixedSize(500, 400)
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(10, 20, 10, 10)
 
         top_layout = QVBoxLayout()
         self.table_label = QLabel(f"Стол: {self.order.table.id_table}, Количество гостей: {self.order.guests}")
-        self.dish_label = QLabel("Блюда:")
-        self.table_label.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
+        self.table_label.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignTop)
         top_layout.addWidget(self.table_label)
+        self.dish_label = QLabel("Блюда:")
+        self.dish_label.setAlignment(Qt.AlignmentFlag.AlignTop)
         top_layout.addWidget(self.dish_label)
         # top_layout.addStretch()
         main_layout.addLayout(top_layout)
 
+        if len(self.order.dishes) == 0:
+            self.dish_label.setText("Блюда: Нет")
+
         self.dish_info_layout = QGridLayout()
         self.dish_info_layout.setHorizontalSpacing(40)
         self.dish_info_layout.setVerticalSpacing(10)
+        main_layout.addLayout(self.dish_info_layout)
         
         bottom_layout = QHBoxLayout()
         self.add_dish_label = QLabel("Добавить блюдо:")
-        # self.add_dish_label.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
+        self.add_dish_label.setAlignment(Qt.AlignmentFlag.AlignBottom)
         bottom_layout.addWidget(self.add_dish_label)
+        bottom_layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
+        main_layout.addLayout(bottom_layout)
 
         self.add_dish_layout = QGridLayout()
+        self.add_dish_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.choose_category_combobox = QComboBox()
+        self.choose_category_combobox.setBaseSize(100, 30)
         self.choose_category_combobox.addItem("Не выбрано")
         self.choose_category_combobox.addItems(Dish_Service().get_menu_categories())
         self.choose_category_combobox.currentIndexChanged.connect(lambda: update_dishes_combobox(self))
         self.add_dish_layout.addWidget(self.choose_category_combobox, 0, 0)
 
         self.choose_dish_combobox = QComboBox()
-        self.choose_dish_combobox.addItem("Не выбрано")
+        # self.choose_dish_combobox.addItem("Не выбрано")
         self.add_dish_layout.addWidget(self.choose_dish_combobox, 0, 1)
+        self.choose_dish_combobox.currentIndexChanged.connect(lambda: add_dish_to_order(self))
+        self.choose_dish_combobox.setDisabled(True)
+   
+        main_layout.addLayout(self.add_dish_layout)
 
 
         self.total_sum_label = QLabel(f"Сумма: {self.order.total_sum} руб.")
@@ -69,16 +82,8 @@ class Order_Edit_Window(QDialog):
         self.back_button = QPushButton("Заказы")
         self.back_button.clicked.connect(lambda: open_order_list_window(self))
         button_layout.addWidget(self.back_button)
-
-        # main_layout.addStretch(0) 
-        main_layout.addLayout(self.dish_info_layout)
-        # main_layout.addStretch(0)  
-
-        main_layout.addLayout(bottom_layout)
-        # main_layout.addStretch(2)
-        main_layout.addLayout(self.add_dish_layout)
-
         main_layout.addLayout(button_layout)
+
         self.setLayout(main_layout)
 
     def ui_update_dishes_layout(self):
@@ -100,10 +105,10 @@ class Order_Edit_Window(QDialog):
 
             delete_button = QPushButton("Удалить")
             delete_button.setFixedSize(65, 30)
-            delete_button.clicked.connect(lambda _, d=dish: delete_dish(self, d))
+            delete_button.clicked.connect(lambda _, dish=dish: delete_dish(self, dish, self.order.id_order))
 
-            # if self.user.role == User_Role.ADMIN:
-            #     self.dish_info_layout.addWidget(delete_button, i, 3)
+            if self.user.role == User_Role.ADMIN:
+                self.dish_info_layout.addWidget(delete_button, i, 3)
 
             if dish.status == Dish_Status.CREATED:
                 spinbox = QSpinBox()
@@ -113,15 +118,18 @@ class Order_Edit_Window(QDialog):
                 spinbox.setMaximum(10)
                 spinbox.valueChanged.connect(partial(update_total_sum, self))
                 self.dish_spinboxes.append(spinbox)
+                self.dish_info_layout.addWidget(delete_button, i, 3)
                 self.dish_info_layout.addWidget(spinbox, i, 1, alignment=Qt.AlignmentFlag.AlignLeft)
             else:
                 self.dish_info_layout.addWidget(amount_label, i, 1, alignment=Qt.AlignmentFlag.AlignLeft)
+            
+            self.dish_info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         update_total_sum(self) 
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = Order_Edit_Window(1)  
-    window.show()
-    sys.exit(app.exec())
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     window = Order_Edit_Window(3)  
+#     window.show()
+#     sys.exit(app.exec())

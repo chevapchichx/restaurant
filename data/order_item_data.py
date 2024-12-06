@@ -5,7 +5,7 @@ class Dish_Status(IntEnum):
     COOKING = 2
     COOKED = 3
 
-class Dish:
+class Order_Item:
     __status = 0
 
     @property
@@ -15,16 +15,17 @@ class Dish:
     @property
     def status(self):
         return self.__status
-
-    def __init__(self, id_dish, dish_name, price, weight, menu_category, dish_status, amount, dish_sum):
-        self.id_dish = int(id_dish)
-        self.dish_name = str(dish_name)
-        self.price = round(float(price), 2)
-        self.weight = round(weight, 2)
-        self.menu_category = menu_category
-        self.__status = int(dish_status)
+    
+    @property
+    def dish_sum(self):
+        return self.dish.price * self.amount
+    
+    def __init__(self, id_order_item, dish, amount, status):
+        self.id_order_item = int(id_order_item)
+        self.dish = dish
         self.amount = int(amount)
-        self.dish_sum = round(float(dish_sum), 2)
+        self.__status = status
+        
 
     def __get_status_name(self):
         if self.status == Dish_Status.CREATED:

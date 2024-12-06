@@ -8,6 +8,7 @@ from data.dish_data import *
 from data.menu_category_data import *
 from data.table_data import *
 from PyQt6.QtWidgets import QMessageBox
+from data.order_item_data import Order_Item
 
 class Order_Service:
     def get_orders(self, id_worker, role):
@@ -33,7 +34,8 @@ class Order_Service:
                     order_time=row[11],
                     order_status=row[12],
                     dishes=[],
-                    total_sum=0)
+                    total_sum=0,
+                    order_items=[])
                     for row in result]
                 return orders
             else:
@@ -53,24 +55,31 @@ class Order_Service:
                 if query.error is None:
                     dishes_result = query.result
                     dishes = []
+                    order_items = []
                     total_sum = 0
                     if dishes_result:
                         for row in dishes_result:
-                            dish_sum = row[2] * row[8] 
+                            dish_sum = row[2] * row[7] 
                             total_sum += dish_sum 
                             dish = Dish(
                                 id_dish=row[0],
                                 dish_name=row[1],
                                 price=row[2],
                                 weight=row[3],
-                                photo=row[4],
                                 menu_category=[Menu_Category(
-                                    id_menu_category=row[5],
-                                    category=row[6])],
-                                dish_status=row[7],
-                                amount=row[8],
+                                    id_menu_category=row[4],
+                                    category=row[5])],
+                                dish_status=row[6],
+                                amount=row[7],
                                 dish_sum=dish_sum) 
                             dishes.append(dish)
+                            order_item = Order_Item(
+                                id_order_item=0,
+                                dish=dish,
+                                amount=row[7],
+                                status=row[6]
+                            )
+                            order_items.append(order_item)
                     order = Order(
                         id_order=result[0],
                         order_num=result[1],
@@ -85,7 +94,8 @@ class Order_Service:
                         order_date=result[6],
                         order_time=result[7],
                         order_status=result[8],
-                        total_sum=total_sum)
+                        total_sum=total_sum,
+                        order_items=order_items)
                     return order
             QMessageBox.critical(None, "Ошибка", "Заказ не найден")
             return None
@@ -142,7 +152,8 @@ class Order_Service:
                     order_time=result[6],
                     order_status=result[7],
                     dishes=[],
-                    total_sum=0)
+                    total_sum=0,
+                    order_items=[])
                 return order
             else:
                 QMessageBox.critical(None, "Ошибка", "Не удалось добавить заказ")
@@ -160,11 +171,20 @@ class Order_Service:
             QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
             return None
     
-    def delete_dish(self, dish):
+    def delete_dish(self, dish, id_order):
         data_service = Database_Service()
-        query = data_service.delete_dish_db(dish)
+        query = data_service.delete_dish_db(dish, id_order)
         if query.error is None:
-            QMessageBox.information(None, "Успех", "Блюдо удалено")
+            return True
+        else:
+            QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
+            return None
+    
+    def add_dish_to_order(self, id_order, id_dish):
+        data_service = Database_Service()
+        query = data_service.add_dish_to_order_db(id_order, id_dish)
+        if query.error is None:
+            return True
         else:
             QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
             return None
