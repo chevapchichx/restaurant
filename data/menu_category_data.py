@@ -1,4 +1,4 @@
 class Menu_Category:
-    def __init__(self, id_menu_category, category):
+    def __init__(self, id_menu_category, name):
         self.id_menu_category = int(id_menu_category)
-        self.category = str(category)
+        self.name = str(name)

@@ -12,6 +12,10 @@ class Order:
     @property
     def full_date(self):
         return f"{self.date} {self.time}"
+    
+    @property
+    def order_sum(self):
+        return sum([item.dish_sum for item in self.order_items])
 
     @property
     def status_name(self):
@@ -21,7 +25,7 @@ class Order:
     def status(self):
         return self.__status
 
-    def __init__(self, id_order, order_num, guests, worker, table, order_date, order_time, order_status, order_items, total_sum, dishes):
+    def __init__(self, id_order, order_num, guests, worker, table, order_date, order_time, order_status, order_items):
         self.id_order = int(id_order)
         self.order_num = int(order_num)
         self.guests = int(guests)
@@ -31,8 +35,7 @@ class Order:
         self.time = order_time
         self.__status = int(order_status)
         self.order_items = order_items
-        self.total_sum = float(total_sum)
-        self.dishes = dishes
+        # self.dishes = dishes
         
 
     def __get_status_name(self):

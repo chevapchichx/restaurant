@@ -5,7 +5,8 @@ import os
 from functools import partial
 sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) #test
 from view.order_edit_w_service import *
-from service.order_service import Order_Service, Dish_Status
+from service.order_service import Order_Service
+from service.dish_service import Dish_Service
 from service.user_service import User_Service
 from service.dish_service import Dish_Service
 
@@ -14,13 +15,14 @@ class Order_Edit_Window(QDialog):
         super().__init__()
         self.order = Order_Service().get_order_for_edit(id_order)
         self.user = User_Service().authorised_user
-
         self.UI_Order_Edit_Window()
 
     def UI_Order_Edit_Window(self):
+        self.categories = Dish_Service().get_menu_categories()
+
         self.setWindowTitle(f"Детали заказа {self.order.order_num}")
-        self.setGeometry(470, 300, 500, 400)
-        self.setFixedSize(500, 400)
+        self.setGeometry(470, 230, 500, 450)
+        self.setFixedSize(500, 450)
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(10, 20, 10, 10)
@@ -35,8 +37,6 @@ class Order_Edit_Window(QDialog):
         # top_layout.addStretch()
         main_layout.addLayout(top_layout)
 
-        if len(self.order.dishes) == 0:
-            self.dish_label.setText("Блюда: Нет")
 
         self.dish_info_layout = QGridLayout()
         self.dish_info_layout.setHorizontalSpacing(40)
@@ -55,20 +55,19 @@ class Order_Edit_Window(QDialog):
         self.choose_category_combobox = QComboBox()
         self.choose_category_combobox.setBaseSize(100, 30)
         self.choose_category_combobox.addItem("Не выбрано")
-        self.choose_category_combobox.addItems(Dish_Service().get_menu_categories())
-        self.choose_category_combobox.currentIndexChanged.connect(lambda: update_dishes_combobox(self))
+        self.choose_category_combobox.addItems([category.name for category in self.categories])
+        self.choose_category_combobox.activated.connect(lambda: update_dishes_combobox(self))
         self.add_dish_layout.addWidget(self.choose_category_combobox, 0, 0)
 
         self.choose_dish_combobox = QComboBox()
         # self.choose_dish_combobox.addItem("Не выбрано")
         self.add_dish_layout.addWidget(self.choose_dish_combobox, 0, 1)
-        self.choose_dish_combobox.currentIndexChanged.connect(lambda: add_dish_to_order(self))
+        self.choose_dish_combobox.activated.connect(lambda: add_dish_to_order(self))
         self.choose_dish_combobox.setDisabled(True)
    
         main_layout.addLayout(self.add_dish_layout)
 
-
-        self.total_sum_label = QLabel(f"Сумма: {self.order.total_sum} руб.")
+        self.total_sum_label = QLabel(f"Сумма: {self.order.order_sum} руб.")
 
         self.ui_update_dishes_layout()
 
@@ -76,7 +75,7 @@ class Order_Edit_Window(QDialog):
         button_layout.addWidget(self.total_sum_label)
 
         self.save_button = QPushButton("Отправить на кухню")
-        self.save_button.clicked.connect(lambda: save_order(self))
+        self.save_button.clicked.connect(lambda: update_order_item_status(self))
         button_layout.addWidget(self.save_button)
 
         self.back_button = QPushButton("Заказы")
@@ -92,44 +91,46 @@ class Order_Edit_Window(QDialog):
             if widget:
                 widget.deleteLater()
 
-        self.dish_spinboxes = [] 
-        for i, dish in enumerate(self.order.dishes):
-            dish_label = QLabel(f"{i + 1}. {dish.dish_name}: {dish.price}")
+        self.dish_spinboxes = {}
+        for i, order_item in enumerate(self.order.order_items):
+            dish_label = QLabel(f"{i + 1}. {order_item.dish.dish_name}: {order_item.dish.price} руб.")
+            dish_label.setWordWrap(True)
+            dish_label.setFixedSize(195, 40)
             dish_label.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
-            amount_label = QLabel(f"{dish.amount}")
-            status_label = QLabel(f"{dish.status_name}")
+            status_label = QLabel(f"{order_item.status_name}")
 
             self.dish_info_layout.addWidget(dish_label, i, 0)
             self.dish_info_layout.addWidget(status_label, i, 2)
 
             delete_button = QPushButton("Удалить")
             delete_button.setFixedSize(65, 30)
-            delete_button.clicked.connect(lambda _, dish=dish: delete_dish(self, dish, self.order.id_order))
+            delete_button.clicked.connect(lambda _, order_item=order_item: delete_dish(self, order_item, self.order.id_order))
 
-            if self.user.role == User_Role.ADMIN:
-                self.dish_info_layout.addWidget(delete_button, i, 3)
-
-            if dish.status == Dish_Status.CREATED:
-                spinbox = QSpinBox()
-                spinbox.setValue(dish.amount)
-                spinbox.setFixedSize(40, 20)
-                spinbox.setMinimum(0)
-                spinbox.setMaximum(10)
-                spinbox.valueChanged.connect(partial(update_total_sum, self))
-                self.dish_spinboxes.append(spinbox)
-                self.dish_info_layout.addWidget(delete_button, i, 3)
-                self.dish_info_layout.addWidget(spinbox, i, 1, alignment=Qt.AlignmentFlag.AlignLeft)
-            else:
-                self.dish_info_layout.addWidget(amount_label, i, 1, alignment=Qt.AlignmentFlag.AlignLeft)
+            # if self.user.role == User_Role.ADMIN:
+            #     self.dish_info_layout.addWidget(delete_button, i, 3)
             
             self.dish_info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+            amount_label = QLabel(f"{order_item.amount}")
 
-        update_total_sum(self) 
+            if order_item.status == Dish_Status.CREATED:
+                spinbox = QSpinBox()
+                spinbox.setRange(0, 10)
+                spinbox.setValue(order_item.amount)
+                spinbox.valueChanged.connect(lambda: update_order_item_amount(self))
+                self.dish_info_layout.addWidget(spinbox, i, 1)
+                self.dish_spinboxes.update({spinbox: order_item})
+                self.dish_info_layout.addWidget(delete_button, i, 3)
+            else:
+                self.dish_info_layout.addWidget(amount_label, i, 1)
 
 
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-#     window = Order_Edit_Window(3)  
-#     window.show()
-#     sys.exit(app.exec())
+        update_dish_sum(self) 
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = Order_Edit_Window(3)  
+    window.show()
+    sys.exit(app.exec())

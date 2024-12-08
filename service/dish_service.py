@@ -1,5 +1,8 @@
 from service.database_service import Database_Service
 from data.dish_data import Dish
+from data.order_item_data import Order_Item
+from data.menu_category_data import Menu_Category
+from PyQt6.QtWidgets import QMessageBox
 
 class Dish_Service():
     def get_menu_categories(self):
@@ -8,7 +11,10 @@ class Dish_Service():
         if query.error is None:
             result = query.result
             if result:
-                categories = [row[0] for row in result]
+                categories = [Menu_Category(
+                    id_menu_category=row[0],
+                    name=row[1])
+                    for row in result]
                 return categories
             else:
                 return "Категории не найдены"
@@ -17,9 +23,9 @@ class Dish_Service():
             return f"Ошибка подключения к базе данных: {query.error}"
 
     
-    def get_dishes_by_category(self, category):
+    def get_dishes_by_category(self, id_menu_category):
         data_service = Database_Service()
-        query = data_service.get_dishes_by_category_db(category)
+        query = data_service.get_dishes_by_category_db(id_menu_category)
         if query.error is None:
             result = query.result
             if result:
@@ -28,8 +34,7 @@ class Dish_Service():
                     dish_name=row[1],
                     price=row[2],
                     weight=row[3],
-                    menu_category=row[4],
-                    dish_status=0, amount=0, dish_sum=0)
+                    menu_category=row[4])
                     for row in result]
                 return dishes
             else:
@@ -37,9 +42,9 @@ class Dish_Service():
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
     
-    def get_dish_by_name(self, dish_name):
+    def get_dish_by_id(self, id_dish):    
         data_service = Database_Service()
-        query = data_service.get_dish_by_name_db(dish_name)
+        query = data_service.get_dish_by_id_db(id_dish)
         if query.error is None:
             result = query.result
             if result:
@@ -48,49 +53,10 @@ class Dish_Service():
                     dish_name=result[1],
                     price=result[2],
                     weight=result[3],
-                    menu_category=result[4],
-                    dish_status=1, amount=1, dish_sum=0)
+                    menu_category=result[4])
                 return dish
             else:
                 return None
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
 
-#     def fill_meals_by_order(self, id_order):
-#         data_service = Database_Service()
-#         query = data_service.get_meals_from_order_db(id_order)
-#         if query.error is None:
-#             result = query.result
-#             if result:
-#                 meals = [Dish(
-#                     id_dish=row[0],
-#                     dish_name=row[1],
-#                     price=row[2],
-#                     weight=row[3],
-#                     =row[4],
-#                     menu_section=row[5])
-#                     for row in result]
-#                 return meals
-#             else:
-#                 return "Блюда не найдены"
-#         else:
-#             return f"Ошибка подключения к базе данных: {query.error}"
-    
-    # def get_meal_by_id(self, id_meal):
-    #     data_service = Database_Service()
-    #     query = data_service.get_meal_by_id_db(id_meal)
-    #     if query.error is None:
-    #         result = query.result
-    #         if result:
-    #             meal = Meal(
-    #                 id_meal=result[0],
-    #                 meal_name=result[1],
-    #                 price=result[2],
-    #                 weight=result[3],
-    #                 =result[4],
-    #                 id_menu_section=result[5])
-    #             return meal
-    #         else:
-    #             return "Блюдо не найдено"
-    #     else:
-    #         return f"Ошибка подключения к базе данных: {query.error}"

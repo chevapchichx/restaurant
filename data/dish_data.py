@@ -1,35 +1,7 @@
-from enum import IntEnum
-
-class Dish_Status(IntEnum):
-    CREATED = 1
-    COOKING = 2
-    COOKED = 3
-
 class Dish:
-    __status = 0
-
-    @property
-    def status_name(self):
-        return self.__get_status_name()
-    
-    @property
-    def status(self):
-        return self.__status
-
-    def __init__(self, id_dish, dish_name, price, weight, menu_category, dish_status, amount, dish_sum):
+    def __init__(self, id_dish, dish_name, price, weight, menu_category):
         self.id_dish = int(id_dish)
         self.dish_name = str(dish_name)
         self.price = round(float(price), 2)
         self.weight = round(weight, 2)
         self.menu_category = menu_category
-        self.__status = int(dish_status)
-        self.amount = int(amount)
-        self.dish_sum = round(float(dish_sum), 2)
-
-    def __get_status_name(self):
-        if self.status == Dish_Status.CREATED:
-            return "Добавлен"
-        if self.status == Dish_Status.COOKING:
-            return "Готовится"
-        if self.status == Dish_Status.COOKED:
-            return "Приготовлен"
