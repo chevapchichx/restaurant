@@ -1,15 +1,16 @@
 import sys
 import os
 from service.order_service import *
-from service.dish_service import Dish_Service
+from service.dish_service import DishService
 from PyQt6.QtWidgets import QLabel, QPushButton, QSpinBox, QMessageBox
-from data.order_item_data import Dish_Status
+from data.order_item_data import DishStatus
+from data.order_data import OrderStatus
 from PyQt6.QtCore import Qt
 from functools import partial
 
 def open_order_list_window(self):
-    from view.order_list_window import Order_List_Window
-    self.waiter_window = Order_List_Window()
+    from view.order_list_window import OrderListWindow
+    self.waiter_window = OrderListWindow()
     self.close()
     # self.waiter_window.show()
 
@@ -25,7 +26,7 @@ def update_order_item_amount(self):
     if spinbox.value() == 0:
         msg = QMessageBox.question(self, "Подтверждение", f"Удалить блюдо {order_item.dish.dish_name} из заказа?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if msg == QMessageBox.StandardButton.Yes:
-            Order_Service().delete_order_item(order_item, self.order.id_order)
+            OrderService().delete_order_item(order_item, self.order.id_order)
             self.order.order_items.remove(order_item)
             self.ui_update_dishes_layout()
             update_dish_sum(self)
@@ -33,13 +34,13 @@ def update_order_item_amount(self):
             spinbox.setValue(order_item.amount)
             return
     order_item.amount = spinbox.value()
-    Order_Service().update_order_item_amount(order_item)
+    OrderService().update_order_item_amount(order_item)
     update_dish_sum(self)
 
 def delete_dish(self, order_item, id_order):
     msg = QMessageBox.question(self, "Подтверждение", f"Удалить блюдо {order_item.dish.dish_name} из заказа?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
     if msg == QMessageBox.StandardButton.Yes:
-        Order_Service().delete_order_item(order_item, id_order)
+        OrderService().delete_order_item(order_item, id_order)
         self.order.order_items.remove(order_item)
         self.ui_update_dishes_layout() 
     else:
@@ -51,7 +52,7 @@ def update_dishes_combobox(self):
     self.choose_dish_combobox.clear()
     self.choose_dish_combobox.addItem("Не выбрано")
     if category_index > 0:
-        self.dishes = Dish_Service().get_dishes_by_category(category.id_menu_category)
+        self.dishes = DishService().get_dishes_by_category(category.id_menu_category)
         self.choose_dish_combobox.addItems([dish.dish_name for dish in self.dishes])
         self.choose_dish_combobox.setDisabled(False)
 
@@ -60,22 +61,22 @@ def add_dish_to_order(self):
     dish = self.dishes[dish_index - 1]
     if dish_index == 0:
         return
-    dish = Dish_Service().get_dish_by_id(dish.id_dish)
+    dish = DishService().get_dish_by_id(dish.id_dish)
     matching_item = next(
         (item for item in self.order.order_items 
-         if item.dish.id_dish == dish.id_dish and item.status == Dish_Status.CREATED), 
+         if item.dish.id_dish == dish.id_dish and item.status == DishStatus.CREATED), 
         None
     )
     if matching_item:
         matching_item.amount += 1
-        Order_Service().update_order_item_amount(matching_item)
+        OrderService().update_order_item_amount(matching_item)
         self.ui_update_dishes_layout()
         update_dish_sum(self)
         self.choose_dish_combobox.setCurrentIndex(0)
         return
     else:
-        id_order_item = Order_Service().add_dish_to_order(self.order.id_order, dish)
-        order_item = Order_Service().get_order_item_by_id(id_order_item)
+        id_order_item = OrderService().add_dish_to_order(self.order.id_order, dish)
+        order_item = OrderService().get_order_item_by_id(id_order_item)
         if order_item is not None:
             self.order.order_items.append(order_item)
             self.ui_update_dishes_layout()
@@ -83,12 +84,21 @@ def add_dish_to_order(self):
             self.choose_dish_combobox.setCurrentIndex(0)
             return
 
-def update_order_item_status(self):
+def update_order_items_status(self):
     if not self.order.order_items:
         QMessageBox.critical(self, "Ошибка", "Заказ пуст")
         return
-    Order_Service().update_order_item_status(self.order, Dish_Status.COOKING)
+    OrderService().update_order_items_status(self.order, DishStatus.COOKING)
     self.close()
+
+def update_order_status(self):
+    from view.order_list_window import OrderListWindow
+    OrderService().update_order_status(self.order, OrderStatus.CLOSED)
+    self.waiter_window = OrderListWindow()
+    self.close()
+    
+
+
 
 
 

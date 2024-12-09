@@ -1,20 +1,22 @@
-from PyQt6.QtWidgets import (QGridLayout, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QApplication)
 from PyQt6.QtCore import Qt
-from service.order_service import Order_Service
+from PyQt6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout,
+                            QLabel, QPushButton, QVBoxLayout, QWidget)
+
+from service.order_service import OrderService
 from view.order_create_w_service import *
 
 
-class Order_Create_Window(QWidget):
+class OrderCreateWindow(QWidget):
     def __init__(self, id_order, order_num):
         super().__init__()
-        self.order_service = Order_Service()
+        self.order_service = OrderService()
         self.selected_table = None
         self.selected_guests = 0
         self.id_order = id_order
         self.order_num = order_num
-        self.UI_Order_Create_Window()
+        self.ui_order_create_window()
 
-    def UI_Order_Create_Window(self):
+    def ui_order_create_window(self):
         self.setWindowTitle(f"Новый заказ {self.order_num}")
         self.setGeometry(400, 230, 650, 450)
         self.setFixedSize(650, 450)
@@ -80,9 +82,9 @@ class Order_Create_Window(QWidget):
 
             
 
-        main_layout.addLayout(table_layout)
-        main_layout.setSpacing(60)
         main_layout.addLayout(guest_layout)
+        main_layout.setSpacing(60)
+        main_layout.addLayout(table_layout)
         # main_layout.addStretch()
         main_layout.addLayout(button_layout)
 

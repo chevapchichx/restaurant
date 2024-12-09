@@ -1,24 +1,28 @@
-from PyQt6.QtWidgets import QGridLayout, QSpinBox, QHBoxLayout, QLabel, QPushButton, QApplication, QDialog, QVBoxLayout, QMessageBox, QWidget, QComboBox
+from PyQt6.QtWidgets import (
+    QGridLayout, QSpinBox, QHBoxLayout, QLabel, QPushButton,
+    QApplication, QDialog, QVBoxLayout, QMessageBox, QWidget, QComboBox
+)
 from PyQt6.QtCore import Qt
 import sys
 import os
 from functools import partial
-sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) #test
+# sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) #test
 from view.order_edit_w_service import *
-from service.order_service import Order_Service
-from service.dish_service import Dish_Service
-from service.user_service import User_Service
-from service.dish_service import Dish_Service
+from data.order_data import OrderStatus
+from service.order_service import OrderService
+from service.dish_service import DishService
+from service.user_service import UserService
+from service.dish_service import DishService
 
-class Order_Edit_Window(QDialog):
+class OrderEditWindow(QDialog): 
     def __init__(self, id_order):
         super().__init__()
-        self.order = Order_Service().get_order_for_edit(id_order)
-        self.user = User_Service().authorised_user
-        self.UI_Order_Edit_Window()
+        self.order = OrderService().get_order_for_edit(id_order)
+        self.user = UserService().authorised_user
+        self.ui_order_edit_window()  
 
-    def UI_Order_Edit_Window(self):
-        self.categories = Dish_Service().get_menu_categories()
+    def ui_order_edit_window(self): 
+        self.categories = DishService().get_menu_categories()
 
         self.setWindowTitle(f"Детали заказа {self.order.order_num}")
         self.setGeometry(470, 230, 500, 450)
@@ -75,8 +79,15 @@ class Order_Edit_Window(QDialog):
         button_layout.addWidget(self.total_sum_label)
 
         self.save_button = QPushButton("Отправить на кухню")
-        self.save_button.clicked.connect(lambda: update_order_item_status(self))
-        button_layout.addWidget(self.save_button)
+        self.save_button.clicked.connect(lambda: update_order_items_status(self))
+
+        self.pay_button = QPushButton("Оплатить")
+        self.pay_button.clicked.connect(lambda: update_order_status(self))
+
+        if self.order.status == OrderStatus.COOKED:
+            button_layout.addWidget(self.pay_button)
+        elif self.order.status == OrderStatus.CREATED or self.order.status == OrderStatus.COOKING:
+            button_layout.addWidget(self.save_button)
 
         self.back_button = QPushButton("Заказы")
         self.back_button.clicked.connect(lambda: open_order_list_window(self))
@@ -93,30 +104,36 @@ class Order_Edit_Window(QDialog):
 
         self.dish_spinboxes = {}
         for i, order_item in enumerate(self.order.order_items):
-            dish_label = QLabel(f"{i + 1}. {order_item.dish.dish_name}: {order_item.dish.price} руб.")
+            dish_label = QLabel(f"{i + 1}. {order_item.dish.dish_name}:\n{order_item.dish.price} руб.")
             dish_label.setWordWrap(True)
-            dish_label.setFixedSize(195, 40)
+            dish_label.setFixedSize(210, 40)
             dish_label.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
+            amount_label = QLabel(f"{order_item.amount}")
+            amount_label.setFixedSize(10, 30)
+
             status_label = QLabel(f"{order_item.status_name}")
+            status_label.setFixedSize(90, 30)
+            status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
             self.dish_info_layout.addWidget(dish_label, i, 0)
             self.dish_info_layout.addWidget(status_label, i, 2)
+            # self.dish_info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
             delete_button = QPushButton("Удалить")
             delete_button.setFixedSize(65, 30)
             delete_button.clicked.connect(lambda _, order_item=order_item: delete_dish(self, order_item, self.order.id_order))
 
-            # if self.user.role == User_Role.ADMIN:
-            #     self.dish_info_layout.addWidget(delete_button, i, 3)
+            if self.user.role == UserRole.ADMIN:
+                delete_button.setFixedSize(65, 30)
+                self.dish_info_layout.addWidget(delete_button, i, 3)
             
             self.dish_info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        
-            amount_label = QLabel(f"{order_item.amount}")
 
-            if order_item.status == Dish_Status.CREATED:
+            if order_item.status == DishStatus.CREATED:
+                delete_button.setFixedSize(65, 30)
                 spinbox = QSpinBox()
-                spinbox.setRange(0, 10)
+                spinbox.setFixedSize(40, 20)
                 spinbox.setValue(order_item.amount)
                 spinbox.valueChanged.connect(lambda: update_order_item_amount(self))
                 self.dish_info_layout.addWidget(spinbox, i, 1)
@@ -126,11 +143,12 @@ class Order_Edit_Window(QDialog):
                 self.dish_info_layout.addWidget(amount_label, i, 1)
 
 
+
         update_dish_sum(self) 
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = Order_Edit_Window(3)  
+    window = OrderEditWindow(3)  
     window.show()
     sys.exit(app.exec())

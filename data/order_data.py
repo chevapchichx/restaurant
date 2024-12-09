@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-class Order_Status(IntEnum):
+class OrderStatus(IntEnum):
     CREATED = 1
     COOKING = 2
     COOKED = 3
@@ -38,12 +38,12 @@ class Order:
         # self.dishes = dishes
         
 
-    def __get_status_name(self):
-        if self.status == Order_Status.CREATED:
+    def __get_status_name(self): 
+        if self.status == OrderStatus.CREATED:
             return "Создан"
-        if self.status == Order_Status.COOKING:
+        if self.status == OrderStatus.COOKING:
             return "Готовится"
-        if self.status == Order_Status.COOKED:
+        if self.status == OrderStatus.COOKED:
             return "Приготовлен"
-        if self.status == Order_Status.CLOSED:
+        if self.status == OrderStatus.CLOSED:
             return "Закрыт"

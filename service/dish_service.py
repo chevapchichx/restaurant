@@ -1,17 +1,17 @@
-from service.database_service import Database_Service
+from service.database_service import DatabaseService
 from data.dish_data import Dish
-from data.order_item_data import Order_Item
-from data.menu_category_data import Menu_Category
-from PyQt6.QtWidgets import QMessageBox
+from data.order_item_data import OrderItem
+from data.menu_category_data import MenuCategory
 
-class Dish_Service():
+
+class DishService:
     def get_menu_categories(self):
-        data_service = Database_Service()
+        data_service = DatabaseService()
         query = data_service.get_menu_categories_db()
         if query.error is None:
             result = query.result
             if result:
-                categories = [Menu_Category(
+                categories = [MenuCategory(
                     id_menu_category=row[0],
                     name=row[1])
                     for row in result]
@@ -24,7 +24,7 @@ class Dish_Service():
 
     
     def get_dishes_by_category(self, id_menu_category):
-        data_service = Database_Service()
+        data_service = DatabaseService()
         query = data_service.get_dishes_by_category_db(id_menu_category)
         if query.error is None:
             result = query.result
@@ -43,7 +43,7 @@ class Dish_Service():
             return f"Ошибка подключения к базе данных: {query.error}"
     
     def get_dish_by_id(self, id_dish):    
-        data_service = Database_Service()
+        data_service = DatabaseService()
         query = data_service.get_dish_by_id_db(id_dish)
         if query.error is None:
             result = query.result

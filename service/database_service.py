@@ -1,14 +1,18 @@
-from sqlalchemy import create_engine, text
-import os
-from data.query_result_data import *
-from data.user_data import User_Role
 import configparser
+import os
+from sqlalchemy import create_engine, text
+
+from data.query_result_data import QueryResult 
+from data.user_data import UserRole
+from data.order_item_data import DishStatus
+
 
 config = configparser.ConfigParser()
 config.read(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'config.txt'))
 db_url = config['database']['db_url']
 
-class Database_Service():
+
+class DatabaseService:
     __engine = create_engine(db_url)
 
     def get_user_db(self, login):
@@ -19,14 +23,14 @@ class Database_Service():
                     FROM staff 
                     WHERE login = :login""")
                 result = conn.execute(query, {"login": login}).fetchone()
-                return Query_Result(result, None)
+                return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
     
     def get_orders_db(self, id_worker, role):
         try:
             with self.__engine.connect() as conn:
-                if role == User_Role.ADMIN:
+                if (role == UserRole.ADMIN):
                     query = text("""
                         SELECT o.id, o.order_num, o.guests, s.id, s.role, s.job, s.last_name, s.first_name, s.middle_name, o.id_table, o.order_date, o.order_time, o.order_status
                         FROM orders o
@@ -41,9 +45,9 @@ class Database_Service():
                         WHERE o.id_worker = :id_worker
                         """)
                     result = conn.execute(query, {"id_worker": id_worker}).fetchall()
-                return Query_Result(result, None)
+                return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
 
     def get_order_for_edit_db(self, id_order):
         try:
@@ -55,15 +59,15 @@ class Database_Service():
                     WHERE o.id = :id_order
                     """)
                 result = conn.execute(query, {"id_order": id_order}).fetchone()
-                return Query_Result(result, None)
+                return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
 
     def get_items_from_order_db(self, id_order):
         try:
             with self.__engine.connect() as conn:
                 query = text("""
-                    SELECT m.id, m.dish, m.price, m.weight, m.id_menu_category, mc.category, o_m.id, o_m.amount, o_m.dish_status
+                    SELECT m.id, m.dish, m.price, m.weight, m.id_menu_category, mc.category, o_m.id, o_m.amount, o_m.dish_status, o_m.id_order
                     FROM orders o
                     JOIN orders_menu o_m ON o.id = o_m.id_order
                     JOIN menu m ON m.id = o_m.id_dish
@@ -71,9 +75,9 @@ class Database_Service():
                     WHERE o.id = :id_order
                     """)
                 result = conn.execute(query, {"id_order": id_order}).fetchall()
-                return Query_Result(result, None)
+                return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
     
     def create_new_order_db(self, id_worker):
         try:
@@ -104,9 +108,9 @@ class Database_Service():
                     "order_num": order_num
                     })
                 result = conn.execute(text("SELECT id, order_num FROM orders WHERE id = :order_id"), {"order_id": order_id}).fetchone()
-                return Query_Result(result, None)
+                return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
 
     def get_is_table_occupied_db(self, table_id):
         try:
@@ -114,12 +118,12 @@ class Database_Service():
                 query = text("""
                     SELECT COUNT(*)
                     FROM orders
-                    WHERE id_table = :table_id AND order_status != 3
+                    WHERE id_table = :table_id AND order_status != 4
                 """)
                 result = conn.execute(query, {"table_id": table_id}).fetchone()
-                return Query_Result(result[0] > 0, None)
+                return QueryResult(result[0] > 0, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
 
     def get_table_capacity_db(self, table_id):
         try:
@@ -130,9 +134,9 @@ class Database_Service():
                     WHERE id = :table_id
                 """)
                 result = conn.execute(query, {"table_id": table_id}).fetchone()
-                return Query_Result(result[0], None)
+                return QueryResult(result[0], None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
     
     def add_order_db(self, id_order, table_id, guests):
         try:
@@ -149,9 +153,9 @@ class Database_Service():
                 })
                 select_query = text("SELECT id, order_num, guests, id_worker, id_table, order_date, order_time, order_status FROM orders WHERE id = :id_order")
                 result = conn.execute(select_query, {"id_order": id_order}).fetchone()
-            return Query_Result(result, None)
+            return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
     
     def update_order_item_amount_db(self, order_item):
         try:
@@ -165,9 +169,9 @@ class Database_Service():
                     "amount": order_item.amount,
                     "id_order_item": order_item.id_order_item
                 })
-                return Query_Result(None, None)
+                return QueryResult(None, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
     
     def delete_order_item_db(self, order_item, id_order):
         try:
@@ -180,9 +184,9 @@ class Database_Service():
                     "id_order": id_order,
                     "id_order_item": order_item.id_order_item
                 })
-                return Query_Result(None, None)
+                return QueryResult(None, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
         
     def get_menu_categories_db(self):
         try:
@@ -192,9 +196,9 @@ class Database_Service():
                     FROM menu_category
                 """)
                 result = conn.execute(query).fetchall()
-                return Query_Result(result, None)
+                return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
 
     def get_dishes_by_category_db(self, id_menu_category):
         try:
@@ -205,9 +209,9 @@ class Database_Service():
                     WHERE id_menu_category = :id_menu_category
                 """)
                 result = conn.execute(query, {"id_menu_category": id_menu_category}).fetchall()
-                return Query_Result(result, None)
+                return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
     
     def get_dish_by_id_db(self, id_dish):
         try:
@@ -218,9 +222,9 @@ class Database_Service():
                     WHERE id = :id_dish
                 """)
                 result = conn.execute(query, {"id_dish": id_dish}).fetchone()
-                return Query_Result(result, None)
+                return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
     
     def add_dish_to_order_db(self, id_order, dish):
         try:
@@ -234,26 +238,26 @@ class Database_Service():
                     "id_dish": dish.id_dish
                 })
                 result = conn.execute(text("SELECT LAST_INSERT_ID() AS last_id")).fetchone()
-                return Query_Result(result, None)
+                return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
     
     def get_order_item_by_id_db(self, id_order_item):
         try:
             with self.__engine.connect() as conn:
                 query = text("""
-                    SELECT m.id, m.dish, m.price, m.weight, m.id_menu_category, mc.category, o_m.id, o_m.amount, o_m.dish_status
+                    SELECT m.id, m.dish, m.price, m.weight, m.id_menu_category, mc.category, o_m.id, o_m.amount, o_m.dish_status, o_m.id_order
                     FROM menu m
                     JOIN orders_menu o_m ON m.id = o_m.id_dish
                     JOIN menu_category mc ON m.id_menu_category = mc.id
                     WHERE o_m.id = :id_order_item
                 """)
                 result = conn.execute(query, {"id_order_item": id_order_item}).fetchone()
-                return Query_Result(result, None)
+                return QueryResult(result, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
     
-    def update_order_item_status_db(self, order, status):
+    def update_order_items_status_db(self, order, status):
         try:
             with self.__engine.begin() as conn:
                 query = text("""
@@ -265,10 +269,59 @@ class Database_Service():
                     "status": status,
                     "id_order": order.id_order
                 })
-                return Query_Result(None, None)
+                return QueryResult(None, None)
         except Exception as e:
-            return Query_Result(None, e)
+            return QueryResult(None, e)
     
+    def get_order_items_db(self):
+        try:
+            with self.__engine.connect() as conn:
+                query = text("""
+                    SELECT o_m.id, o_m.id_dish, m.dish, m.price, m.weight, m.id_menu_category, mc.category, 
+                             o_m.amount, o_m.dish_status, o_m.id_order
+                    FROM orders_menu o_m
+                    JOIN menu m ON o_m.id_dish = m.id
+                    JOIN menu_category mc ON m.id_menu_category = mc.id
+                    """)
+                result = conn.execute(query).fetchall()
+                return QueryResult(result, None)
+        except Exception as e:
+            return QueryResult(None, e)
+        
+    def update_order_item_status_db(self, order_item, status):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    UPDATE orders_menu
+                    SET dish_status = :status
+                    WHERE id = :id_order_item
+                """)
+                conn.execute(query, {
+                    "status": status,
+                    "id_order_item": order_item.id_order_item
+                })
+                return QueryResult(None, None)
+        except Exception as e:
+            return QueryResult(None, e)
+    
+    def update_order_status_db(self, order, status):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    UPDATE orders
+                    SET order_status = :status
+                    WHERE id = :id_order
+                """)
+                conn.execute(query, {
+                    "status": status,
+                    "id_order": order.id_order
+                })
+                return QueryResult(None, None)
+        except Exception as e:
+            return QueryResult(None, e)
+
+
+
 
 
 

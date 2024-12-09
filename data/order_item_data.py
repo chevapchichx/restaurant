@@ -1,16 +1,16 @@
 from enum import IntEnum
 
-class Dish_Status(IntEnum):
+class DishStatus(IntEnum):  
     CREATED = 1
     COOKING = 2
     COOKED = 3
 
-class Order_Item:
+class OrderItem:
     __status = 0
 
     @property
     def status_name(self):
-        return self.__get_status_name()
+        return self.__get_status_name()  
     
     @property
     def status(self):
@@ -20,17 +20,18 @@ class Order_Item:
     def dish_sum(self):
         return self.dish.price * self.amount
     
-    def __init__(self, id_order_item, dish, amount, status):
+    def __init__(self, id_order_item, dish, amount, status, id_order):
         self.id_order_item = int(id_order_item)
         self.dish = dish
         self.amount = int(amount)
         self.__status = status
+        self.id_order = int(id_order)
         
 
-    def __get_status_name(self):
-        if self.status == Dish_Status.CREATED:
-            return "Добавлен"
-        if self.status == Dish_Status.COOKING:
+    def __get_status_name(self): 
+        if self.status == DishStatus.CREATED:
+            return "Добавлено"
+        if self.status == DishStatus.COOKING:
             return "Готовится"
-        if self.status == Dish_Status.COOKED:
-            return "Приготовлен"
+        if self.status == DishStatus.COOKED:
+            return "Приготовлено"

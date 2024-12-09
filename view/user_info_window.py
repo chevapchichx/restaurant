@@ -1,21 +1,24 @@
-from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QGridLayout, QHBoxLayout, QSpacerItem, QSizePolicy)
+from PyQt6.QtWidgets import (
+    QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, 
+    QGridLayout, QHBoxLayout, QSpacerItem, QSizePolicy
+)
 from PyQt6.QtCore import Qt
 import sys
 import os
-from service.user_service import User_Service
-from view.user_info_w_service import open_order_list_window
+# sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) #test
+from service.user_service import UserService, UserRole
+from view.user_info_w_service import *
 
-class User_Info_Window(QWidget):
+class UserInfoWindow(QWidget):
     def __init__(self):
         super().__init__()
-        # self.user = user   #test
-        self.user = User_Service().authorised_user
-        self.UI_UserInfoWindow()
+        self.user = UserService().authorised_user
+        self.ui_user_info_window()
 
-    def UI_UserInfoWindow(self):
+    def ui_user_info_window(self):
         self.setWindowTitle("Информация о сотруднике")
         self.setGeometry(400, 230, 650, 450)
-        self.setFixedSize(650, 450)
+        self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)
 
@@ -24,18 +27,17 @@ class User_Info_Window(QWidget):
         self.name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(self.name_label)
 
-        left_spacer = QSpacerItem(45, 10, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        left_spacer = QSpacerItem(40, 10, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         right_spacer = QSpacerItem(30, 10, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         details_layout = QGridLayout()
-        details_layout.setHorizontalSpacing(40)
+        details_layout.setHorizontalSpacing(50)
         details_layout.setVerticalSpacing(15)
         details_layout.setColumnStretch(1, 1)
         details_layout.addItem(left_spacer, 0, 0)
         details_layout.addItem(right_spacer, 0, 5)
 
         details_layout.addWidget(QLabel("Дата рождения:"), 0, 1)
-        # self.birth_date_label = QLabel(self.user.birth_date) #test
         self.birth_date_label = QLabel(self.user.birth_date.strftime('%d-%m-%Y'))
         details_layout.addWidget(self.birth_date_label, 0, 2)
 
@@ -66,7 +68,10 @@ class User_Info_Window(QWidget):
         back_button_layout.addWidget(self.back_button)
         main_layout.addLayout(back_button_layout)
 
-        self.back_button.clicked.connect(lambda: open_order_list_window(self))
+        if self.user.role == UserRole.WAITER or self.user.role == UserRole.ADMIN:
+            self.back_button.clicked.connect(lambda: open_order_list_window(self))
+        elif self.user.role == UserRole.COOK:
+            self.back_button.clicked.connect(lambda: open_dish_list_window(self))
 
 
 # if __name__ == "__main__":

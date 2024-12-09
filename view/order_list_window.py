@@ -1,20 +1,24 @@
-from PyQt6.QtWidgets import (QApplication, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem)
+from PyQt6.QtWidgets import (
+    QApplication, QPushButton, QVBoxLayout, QHBoxLayout, 
+    QWidget, QLabel, QTableWidget, QTableWidgetItem
+)
 from PyQt6.QtCore import Qt
 from view.order_list_w_service import *
-from service.user_service import User_Service, User_Role
-from service.order_service import *
+from data.order_data import OrderStatus
+from service.user_service import UserService
+from service.order_service import OrderService
 
-class Order_List_Window(QWidget):
+class OrderListWindow(QWidget): 
     def __init__(self):
         super().__init__()
-        self.user = User_Service().authorised_user
-        self.orders = sorted(Order_Service().get_orders(self.user.id_worker, self.user.role), key=lambda order: order.full_date, reverse=True)
-        self.UI_Order_List_Window()
+        self.user = UserService().authorised_user
+        self.orders = sorted(OrderService().get_orders(self.user.id_worker, self.user.role), key=lambda order: order.full_date, reverse=True)
+        self.ui_order_list_window()  
 
-    def UI_Order_List_Window(self):
+    def ui_order_list_window(self): 
         self.setWindowTitle("Текущие заказы")
         self.setGeometry(400, 230, 650, 450)
-        self.setFixedSize(650, 450)
+        self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)
 
@@ -22,7 +26,6 @@ class Order_List_Window(QWidget):
         self.add_order_button = QPushButton("Новый заказ")
         self.info_button = QPushButton("Кабинет")
         self.exit_button = QPushButton("Выйти")
-        self.button_1 = QPushButton("Для админа")
 
         top_layout.addWidget(self.add_order_button)
         top_layout.addStretch()
@@ -36,7 +39,7 @@ class Order_List_Window(QWidget):
         self.orders_table.setColumnWidth(0, 80)
         self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Дата", "Гости", "Статус"])
 
-        filtered_orders = [order for order in self.orders if order.status != Order_Status.CLOSED]
+        filtered_orders = [order for order in self.orders if order.status != OrderStatus.CLOSED]
         unique_orders = {order.order_num: order for order in filtered_orders}
 
         self.orders_table.setRowCount(len(unique_orders))
@@ -66,7 +69,7 @@ class Order_List_Window(QWidget):
             item_status.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.orders_table.setItem(i, 5, item_status)
 
-            if self.user.role == User_Role.ADMIN:
+            if self.user.role == UserRole.ADMIN:
                 self.orders_table.setColumnCount(7)
                 self.orders_table.setColumnWidth(0, 60)
                 self.orders_table.setColumnWidth(1, 60)
@@ -88,10 +91,6 @@ class Order_List_Window(QWidget):
         exit_layout = QHBoxLayout()
         exit_layout.addStretch()
         exit_layout.addWidget(self.exit_button)
-
-        if self.user.role == User_Role.ADMIN:
-            self.add_order_button.hide()
-            exit_layout.addWidget(self.button_1)
 
         main_layout.addLayout(top_layout)
         main_layout.addWidget(self.orders_table)

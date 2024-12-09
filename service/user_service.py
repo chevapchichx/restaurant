@@ -2,10 +2,10 @@ import bcrypt
 import sys
 import os
 from data.user_data import *
-from service.database_service import *
-from service.singleton import *
+from service.database_service import DatabaseService
+from service.singleton import SingletonMeta
 
-class User_Service(metaclass=SingletonMeta):
+class UserService(metaclass=SingletonMeta):
     __user: User = None
 
     @property
@@ -13,7 +13,7 @@ class User_Service(metaclass=SingletonMeta):
         return self.__user
     
     def get_user(self, login, password):
-        data_service = Database_Service()
+        data_service = DatabaseService()
         query = data_service.get_user_db(login)
         if query.error is None:
             result = query.result   
@@ -35,7 +35,7 @@ class User_Service(metaclass=SingletonMeta):
                         password=result[11])
                 else:
                     return "Неверный пароль"
-                if self.__user.role > len(User_Role) or self.__user.role < 1:
+                if self.__user.role > len(UserRole) or self.__user.role < 1:
                     self.__user = None
                     return "Неизвестная роль пользователя"
                 return ""
@@ -44,4 +44,4 @@ class User_Service(metaclass=SingletonMeta):
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
 
-    
+

@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-class User_Role(IntEnum):
+class UserRole(IntEnum): 
     WAITER = 1
     COOK = 2
     ADMIN = 3
@@ -34,12 +34,12 @@ class User:
         self.login = str(login)
         self.password = str(password)
 
-    def __get_role_name(self):
-        if self.role == User_Role.WAITER:
+    def __get_role_name(self): 
+        if self.role == UserRole.WAITER:
             return "Официант"
-        elif self.role == User_Role.COOK:
+        elif self.role == UserRole.COOK:
             return "Повар"
-        elif self.role == User_Role.ADMIN:
+        elif self.role == UserRole.ADMIN:
             return "Администратор"
         else:
             return "Неизвестно"
