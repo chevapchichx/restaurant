@@ -25,11 +25,11 @@ class Order:
     def status(self):
         return self.__status
 
-    def __init__(self, id_order, order_num, guests, worker, table, order_date, order_time, order_status, order_items):
+    def __init__(self, id_order, order_num, guests, staff, table, order_date, order_time, order_status, order_items):
         self.id_order = int(id_order)
         self.order_num = int(order_num)
         self.guests = int(guests)
-        self.worker = worker
+        self.staff = staff
         self.table = table
         self.date = order_date
         self.time = order_time

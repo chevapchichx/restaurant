@@ -21,30 +21,30 @@ class DatabaseService:
                 query = text("""
                     SELECT id, role, job, last_name, first_name, middle_name, birth_date, address, phone_number, salary, login, password
                     FROM staff 
-                    WHERE login = :login""")
+                    WHERE login = :login and deleted is null""")
                 result = conn.execute(query, {"login": login}).fetchone()
                 return QueryResult(result, None)
         except Exception as e:
             return QueryResult(None, e)
     
-    def get_orders_db(self, id_worker, role):
+    def get_orders_db(self, id_staff, role):
         try:
             with self.__engine.connect() as conn:
                 if (role == UserRole.ADMIN):
                     query = text("""
-                        SELECT o.id, o.order_num, o.guests, s.id, s.role, s.job, s.last_name, s.first_name, s.middle_name, o.id_table, o.order_date, o.order_time, o.order_status
+                        SELECT o.id, o.order_num, o.guests, o.id_staff, s.role, s.job, s.last_name, s.first_name, s.middle_name, o.id_table, o.order_date, o.order_time, o.order_status
                         FROM orders o
-                        JOIN staff s ON o.id_worker = s.id
+                        JOIN staff s ON o.id_staff = s.id
                         """)
                     result = conn.execute(query).fetchall()
                 else:
                     query = text("""
-                        SELECT o.id, o.order_num, o.guests, s.id, s.role, s.job, s.last_name, s.first_name, s.middle_name, o.id_table, o.order_date, o.order_time, o.order_status
+                        SELECT o.id, o.order_num, o.guests, o.id_staff, s.role, s.job, s.last_name, s.first_name, s.middle_name, o.id_table, o.order_date, o.order_time, o.order_status
                         FROM orders o
-                        JOIN staff s ON o.id_worker = s.id
-                        WHERE o.id_worker = :id_worker
+                        JOIN staff s ON o.id_staff = s.id
+                        WHERE o.id_staff = :id_staff
                         """)
-                    result = conn.execute(query, {"id_worker": id_worker}).fetchall()
+                    result = conn.execute(query, {"id_staff": id_staff}).fetchall()
                 return QueryResult(result, None)
         except Exception as e:
             return QueryResult(None, e)
@@ -53,7 +53,7 @@ class DatabaseService:
         try:
             with self.__engine.connect() as conn:
                 query = text("""
-                    SELECT o.id, o.order_num, o.guests, o.id_worker, o.id_table, t.number_of_seats, o.order_date, o.order_time, o.order_status
+                    SELECT o.id, o.order_num, o.guests, o.id_staff, o.id_table, t.number_of_seats, o.order_date, o.order_time, o.order_status
                         FROM orders o
                         JOIN tables t ON o.id_table = t.id
                     WHERE o.id = :id_order
@@ -79,14 +79,14 @@ class DatabaseService:
         except Exception as e:
             return QueryResult(None, e)
     
-    def create_new_order_db(self, id_worker):
+    def create_new_order_db(self, id_staff):
         try:
             with self.__engine.begin() as conn:
                 query = text("""
-                    INSERT INTO orders (id_worker, order_date, order_time, guests)
-                    VALUES (:id_worker, CURDATE(), CURTIME(), 0)
+                    INSERT INTO orders (id_staff, order_date, order_time, guests)
+                    VALUES (:id_staff, CURDATE(), CURTIME(), 0)
                 """)
-                conn.execute(query, {"id_worker": id_worker})
+                conn.execute(query, {"id_staff": id_staff})
 
                 select_query = text("SELECT LAST_INSERT_ID() AS last_id")
                 result = conn.execute(select_query).fetchone()
@@ -151,7 +151,7 @@ class DatabaseService:
                     "guests": guests,
                     "id_order": id_order
                 })
-                select_query = text("SELECT id, order_num, guests, id_worker, id_table, order_date, order_time, order_status FROM orders WHERE id = :id_order")
+                select_query = text("SELECT id, order_num, guests, id_staff, id_table, order_date, order_time, order_status FROM orders WHERE id = :id_order")
                 result = conn.execute(select_query, {"id_order": id_order}).fetchone()
             return QueryResult(result, None)
         except Exception as e:
@@ -320,8 +320,104 @@ class DatabaseService:
         except Exception as e:
             return QueryResult(None, e)
 
+    def get_staffs_info_db(self):
+        try:
+            with self.__engine.connect() as conn:
+                query = text("""
+                    SELECT id, role, job, last_name, first_name, middle_name, birth_date, address, phone_number, salary
+                    FROM staff
+                    where deleted is null
+                """)
+                result = conn.execute(query).fetchall()
+                return QueryResult(result, None)
+        except Exception as e:
+            return QueryResult(None, e)
 
+    def check_exist_login_db(self, login):
+        try:
+            with self.__engine.connect() as conn:
+                query = text("""
+                    SELECT id, last_name, first_name, middle_name, login, password, 
+                    case
+                        when deleted is null then 1
+                        when deleted is not null then 0
+                    end as is_exist
+                    FROM staff 
+                    WHERE login = :login
+                """)
+                result = conn.execute(query, {"login": login}).fetchone()
+                return QueryResult(result, None)
+        except Exception as e:
+            return QueryResult(None, e)
+        
+    def update_deleted_status_staff_db(self, id_staff):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    UPDATE staff
+                    set deleted = CASE 
+                        when deleted is null then CURRENT_TIMESTAMP()
+                        else null
+                        end
+                    where id = :id_staff
+                """)
+                conn.execute(query, {"id_staff": id_staff})
+                return QueryResult(None, None)
+        except Exception as e:
+            return QueryResult(None, e)
+    
+    def add_staff_db(self, login, password, role, last_name, first_name, middle_name, job, birth_date, address, phone_number, salary):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    INSERT INTO staff (login, password, role, last_name, first_name, middle_name, job, birth_date, address, phone_number, salary)
+                    VALUES (:login, :password, :role, :last_name, :first_name, :middle_name, :job, :birth_date, :address, :phone_number, :salary)
+                """)
+                conn.execute(query, {
+                    "login": login,
+                    "password": password,
+                    "role": role,
+                    "last_name": last_name,
+                    "first_name": first_name,
+                    "middle_name": middle_name,
+                    "job": job,
+                    "birth_date": birth_date,
+                    "address": address,
+                    "phone_number": phone_number,
+                    "salary": salary
+                })
+                return QueryResult(None, None)
+        except Exception as e:
+            return QueryResult(None, e)
+    
+    def update_staff_db(self, login, password, role, last_name, first_name, middle_name, job, birth_date, address, phone_number, salary):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    UPDATE staff
+                    SET password = :password, role = :role, last_name = :last_name, first_name = :first_name, middle_name = :middle_name, job = :job, birth_date = :birth_date, address = :address, phone_number = :phone_number, salary = :salary
+                    WHERE login = :login
+                """)
+                conn.execute(query, {
+                    "login": login,
+                    "password": password,
+                    "role": role,
+                    "last_name": last_name,
+                    "first_name": first_name,
+                    "middle_name": middle_name,
+                    "job": job,
+                    "birth_date": birth_date,
+                    "address": address,
+                    "phone_number": phone_number,
+                    "salary": salary
+                })
+                return QueryResult(None, None)
+        except Exception as e:
+            return QueryResult(None, e)
+        
 
+                
+        
 
 
 

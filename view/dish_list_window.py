@@ -3,6 +3,9 @@ from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMessageBox,
                             QPushButton, QTableWidget, QTableWidgetItem,
                             QVBoxLayout, QWidget)
 
+import sys
+import os
+# sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))  #test
 from service.dish_service import *
 from service.order_service import *
 from service.user_service import UserRole, UserService
@@ -14,6 +17,8 @@ class DishListWindow(QWidget):
         super().__init__()
         self.user = UserService().authorised_user
         self.order_items = OrderService().get_order_items()
+        if self.order_items is None:
+            self.order_items = []
         self.ui_dish_list_window()
     
     def ui_dish_list_window(self):
@@ -88,7 +93,7 @@ class DishListWindow(QWidget):
 # if __name__ == "__main__":
 #     app = QApplication(sys.argv)
 #     user = User(
-#         id_worker=1,
+#         id_staff=1,
 #         role=2,
 #         job="Официант",
 #         last_name="Иванов",
@@ -101,6 +106,6 @@ class DishListWindow(QWidget):
 #         login="ivanov",
 #         password=""
 #     )
-#     window = Dish_List_Window()
+#     window = DishListWindow()
 #     window.show()
 #     sys.exit(app.exec())

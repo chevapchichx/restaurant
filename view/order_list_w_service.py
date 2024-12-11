@@ -21,11 +21,11 @@ def open_order_edit_window(self, id_order):
     self.order_details_window = OrderEditWindow(id_order)
     self.order_details_window.exec()
 
-def create_new_order(self, id_worker):
+def create_new_order(self, id_staff):
     from view.order_create_window import OrderCreateWindow
     order_service = OrderService()
     # user = User_Service().authorised_user
-    new_order = order_service.create_new_order(id_worker)
+    new_order = order_service.create_new_order(id_staff)
     if new_order:
         self.create_order_window = OrderCreateWindow(new_order[0], new_order[1])
         self.create_order_window.show()
@@ -34,9 +34,9 @@ def create_new_order(self, id_worker):
         QMessageBox.critical(self, "Ошибка", "Не удалось создать новый заказ")
 
 
-# def get_order(self):
-#     order_service = Order_Service()
-#     result = order_service.fill_order(self.user.login)
-
-    # if result:
+def open_staff_list_window(self):
+    from view.staff_list_window import StaffListWindow
+    self.staff_list_window = StaffListWindow()
+    self.staff_list_window.show()
+    self.close()
 

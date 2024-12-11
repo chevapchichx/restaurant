@@ -11,9 +11,9 @@ from service.database_service import DatabaseService
 
 
 class OrderService:
-    def get_orders(self, id_worker, role):
+    def get_orders(self, id_staff, role):
         data_service = DatabaseService()
-        query = data_service.get_orders_db(id_worker, role)
+        query = data_service.get_orders_db(id_staff, role)
         if query.error is None:
             result = query.result   
             if result:
@@ -21,8 +21,8 @@ class OrderService:
                     id_order=row[0],
                     order_num=row[1],
                     guests=row[2],
-                    worker=User(
-                        id_worker=row[3],
+                    staff=User(
+                        id_staff=row[3],
                         role=row[4],
                         job=row[5],
                         last_name=row[6],
@@ -78,8 +78,8 @@ class OrderService:
                         id_order=result[0],
                         order_num=result[1],
                         guests=result[2],
-                        worker=User(
-                            id_worker=result[3],
+                        staff=User(
+                            id_staff=result[3],
                             role=0, job=None, last_name=None, first_name=None, middle_name=None, birth_date=None, address=None, phone_number=None, salary=0, login=None, password=None),
                         table=Table(
                             id_table=result[4],
@@ -96,9 +96,9 @@ class OrderService:
             QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
             return None
 
-    def create_new_order(self, id_worker):
+    def create_new_order(self, id_staff):
         data_service = DatabaseService()
-        query = data_service.create_new_order_db(id_worker)
+        query = data_service.create_new_order_db(id_staff)
         if query.error is None:
             result = query.result
             return result
@@ -135,8 +135,8 @@ class OrderService:
                     id_order=result[0],
                     order_num=result[1],
                     guests=result[2],
-                    worker=User(
-                        id_worker=result[3],
+                    staff=User(
+                        id_staff=result[3],
                         role=0, job=None, last_name=None, first_name=None, middle_name=None, birth_date=None, address=None, phone_number=None, salary=0, login=None, password=None),
                     table=Table(
                         id_table=result[4],

@@ -12,7 +12,11 @@ class OrderListWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.user = UserService().authorised_user
-        self.orders = sorted(OrderService().get_orders(self.user.id_worker, self.user.role), key=lambda order: order.full_date, reverse=True)
+        self.orders = OrderService().get_orders(self.user.id_staff, self.user.role)
+        if self.orders is None:
+            self.orders = []
+        else:
+            self.orders = sorted(self.orders, key=lambda order: order.full_date, reverse=True)
         self.ui_order_list_window()  
 
     def ui_order_list_window(self): 
@@ -32,6 +36,13 @@ class OrderListWindow(QWidget):
         self.user_name_label = QLabel(f"{self.user.role_name}: {self.user.first_name} {self.user.last_name}")
         top_layout.addWidget(self.user_name_label)
         top_layout.addStretch()
+
+        self.staff_list = QPushButton("Управление персоналом")
+
+        if self.user.role == UserRole.ADMIN:
+            top_layout.addWidget(self.staff_list)
+            self.staff_list.clicked.connect(lambda: open_staff_list_window(self))
+
         top_layout.addWidget(self.info_button)
 
         self.orders_table = QTableWidget()
@@ -79,9 +90,9 @@ class OrderListWindow(QWidget):
                 self.orders_table.setColumnWidth(5, 100)
                 self.orders_table.setColumnWidth(6, 120)
                 self.orders_table.setHorizontalHeaderLabels(["Заказ", "Стол", "Время", "Дата", "Гости", "Статус", "Официант"])
-                item_worker = QTableWidgetItem(f"{order.worker.first_name} {order.worker.last_name}")
-                item_worker.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.orders_table.setItem(i, 6, item_worker)
+                item_staff = QTableWidgetItem(f"{order.staff.first_name} {order.staff.last_name}")
+                item_staff.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                self.orders_table.setItem(i, 6, item_staff)
 
         self.orders_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.orders_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
@@ -96,7 +107,7 @@ class OrderListWindow(QWidget):
         main_layout.addWidget(self.orders_table)
         main_layout.addLayout(exit_layout)
 
-        self.add_order_button.clicked.connect(lambda: create_new_order(self, id_worker=self.user.id_worker))
+        self.add_order_button.clicked.connect(lambda: create_new_order(self, id_staff=self.user.id_staff))
         self.info_button.clicked.connect(lambda: open_user_info_window(self))
         self.exit_button.clicked.connect(lambda: open_auth_window(self))
 
