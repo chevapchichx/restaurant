@@ -25,11 +25,15 @@ class StaffListWindow(QWidget):
         top_layout = QHBoxLayout()
 
         self.add_staff_button = QPushButton("Добавить сотрудника")
+        self.add_staff_button.setFixedSize(150, 25)
+        self.add_staff_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         self.add_staff_button.clicked.connect(lambda: open_add_staff_window(self))
         top_layout.addWidget(self.add_staff_button)
         top_layout.addStretch()
 
         self.back_button = QPushButton("Назад")
+        self.back_button.setFixedSize(60, 25)
+        self.back_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         self.back_button.clicked.connect(lambda: open_order_list_window(self))
 
         self.staffs_table = QTableWidget()

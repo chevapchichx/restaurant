@@ -1,8 +1,9 @@
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer, QTime
 from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMessageBox,
                             QPushButton, QTableWidget, QTableWidgetItem,
                             QVBoxLayout, QWidget)
-
+import datetime
+import weakref
 from service.dish_service import *
 from service.order_service import *
 from service.user_service import UserRole, UserService
@@ -75,7 +76,7 @@ class DishListWindow(QWidget):
             item_dish_name.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.dish_table.setItem(i, 0, item_dish_name)
             
-            item_dish_weight = QTableWidgetItem(str(order_item.dish.weight))
+            item_dish_weight = QTableWidgetItem(str(f"{order_item.dish.weight} гр."))
             item_dish_weight.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.dish_table.setItem(i, 1, item_dish_weight)
             
@@ -83,11 +84,24 @@ class DishListWindow(QWidget):
             item_amount.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.dish_table.setItem(i, 2, item_amount)
 
-            item_dish_time = QTableWidgetItem(order_item.added_time.strftime("%H:%M:%S"))
+            item_dish_time = QTableWidgetItem()
             item_dish_time.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.dish_table.setItem(i, 3, item_dish_time)
+            self.start_timer(item_dish_time, order_item.added_time)
             
             if order_item.status == DishStatus.COOKING:
                 update_button = QPushButton("Приготовлено")
                 update_button.clicked.connect(lambda _, order_item=order_item: update_item_order_status(self, order_item))
                 self.dish_table.setCellWidget(i, 4, update_button)
+
+    def start_timer(self, item_dish_time, added_time):
+        item_dish_time_ref = weakref.ref(item_dish_time)
+        timer = QTimer(self)
+        timer.timeout.connect(lambda: self.update_time(item_dish_time_ref, added_time))
+        timer.start(1000)
+
+    def update_time(self, item_dish_time_ref, added_time):
+        item_dish_time = item_dish_time_ref()
+        if item_dish_time is not None:
+            elapsed_time = datetime.datetime.now() - added_time
+            item_dish_time.setText(str(elapsed_time).split('.')[0])

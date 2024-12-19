@@ -5,10 +5,10 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, pyqtSignal
 from view.order_edit_w_service import *
 from data.order_data import OrderStatus
+from data.order_item_data import DishStatus
 from service.order_service import OrderService
 from service.dish_service import DishService
 from service.user_service import UserService
-from service.dish_service import DishService
 
 class OrderEditWindow(QWidget): 
     def __init__(self, id_order):
@@ -81,28 +81,29 @@ class OrderEditWindow(QWidget):
 
         self.ui_update_dishes_layout()
 
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(self.total_sum_label)
+        self.button_layout = QHBoxLayout()
+        self.button_layout.addWidget(self.total_sum_label)
 
         self.update_or_pay_button = QPushButton("Отправить на кухню")
         self.update_or_pay_button.setFixedSize(140, 25)
         self.update_or_pay_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         self.update_or_pay_button.clicked.connect(lambda: update_or_pay_order(self))
-        button_layout.addWidget(self.update_or_pay_button)
 
-        # if self.order.status == OrderStatus.COOKED:
-        #     button_layout.addWidget(self.pay_button)
-        # elif self.order.status == OrderStatus.CREATED or self.order.status == OrderStatus.COOKING:
-        #     button_layout.addWidget(self.save_button)
+        self.pay_button = QPushButton("Оплатить")
+        self.pay_button.setFixedSize(140, 25)
+        self.pay_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
+        self.pay_button.clicked.connect(lambda: update_order_status(self))
 
         self.back_button = QPushButton("Заказы")
         self.back_button.setFixedSize(80, 25)
         self.back_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         self.back_button.clicked.connect(lambda: open_order_list_window(self))
-        button_layout.addWidget(self.back_button)
-        main_layout.addLayout(button_layout)
+        self.button_layout.addWidget(self.back_button)
+        main_layout.addLayout(self.button_layout)
 
         self.setLayout(main_layout)
+
+        self.update_button_visibility()
 
     def ui_update_dishes_layout(self):
         for i in reversed(range(self.dish_info_layout.count())):
@@ -154,4 +155,30 @@ class OrderEditWindow(QWidget):
             else:
                 self.dish_info_layout.addWidget(amount_label, i, 2)
 
-        update_dish_sum(self) 
+        update_dish_sum(self)
+        self.update_button_visibility()
+
+    def update_button_visibility(self):
+        if hasattr(self, 'update_or_pay_button') and hasattr(self, 'pay_button'):
+            if any(item.status == DishStatus.CREATED for item in self.order.order_items):
+                if not self.update_or_pay_button.isVisible():
+                    self.button_layout.insertWidget(1, self.update_or_pay_button)
+                    self.update_or_pay_button.setVisible(True)
+                if self.pay_button.isVisible():
+                    self.button_layout.removeWidget(self.pay_button)
+                    self.pay_button.setVisible(False)
+            elif self.order.status == OrderStatus.COOKED:
+                if not self.pay_button.isVisible():
+                    self.button_layout.insertWidget(1, self.pay_button)
+                    self.pay_button.setVisible(True)
+                if self.update_or_pay_button.isVisible():
+                    self.button_layout.removeWidget(self.update_or_pay_button)
+                    self.update_or_pay_button.setVisible(False)
+            else:
+                if self.update_or_pay_button.isVisible():
+                    self.button_layout.removeWidget(self.update_or_pay_button)
+                    self.update_or_pay_button.setVisible(False)
+                if self.pay_button.isVisible():
+                    self.button_layout.removeWidget(self.pay_button)
+                    self.pay_button.setVisible(False)
+

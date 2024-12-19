@@ -84,8 +84,17 @@ def check_login(self):
         if staff.role == 1:
             self.error_label.setText("Логин занят!")
         elif staff.role == 0:
-            msg = QMessageBox.question(self, "Подтверждение", f"Восстановить {staff.last_name} {staff.first_name} {staff.middle_name}?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-            if msg == QMessageBox.StandardButton.Yes:
+            msg = QMessageBox(self)
+            msg.setWindowTitle("Подтверждение")
+            msg.setText(f"Восстановить {staff.last_name} {staff.first_name} {staff.middle_name}?")
+            msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            yes_button = msg.button(QMessageBox.StandardButton.Yes)
+            no_button = msg.button(QMessageBox.StandardButton.No)
+            yes_button.setText("Да")
+            no_button.setText("Нет")
+            result = msg.exec()
+
+            if result == QMessageBox.StandardButton.Yes:
                 UserService().update_deleted_status_staff(staff.id_staff)
                 staff = UserService().get_staff_info_by_login(login)
                 self.login_input.setText(staff.login)

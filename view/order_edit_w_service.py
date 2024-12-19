@@ -1,5 +1,3 @@
-import sys
-import os
 from service.order_service import *
 from service.dish_service import DishService
 from PyQt6.QtWidgets import QLabel, QPushButton, QSpinBox, QMessageBox
@@ -27,29 +25,78 @@ def update_or_pay_order(self):
     else:
         update_order_status(self)
 
+def update_button_visibility(self):
+    if hasattr(self, 'update_or_pay_button') and hasattr(self, 'pay_button'):
+        if any(item.status == DishStatus.CREATED for item in self.order.order_items):
+            if not self.update_or_pay_button.isVisible():
+                self.button_layout.insertWidget(1, self.update_or_pay_button)
+                self.update_or_pay_button.setVisible(True)
+            if self.pay_button.isVisible():
+                self.button_layout.removeWidget(self.pay_button)
+                self.pay_button.setVisible(False)
+        elif self.order.status == OrderStatus.COOKED:
+            if not self.pay_button.isVisible():
+                self.button_layout.insertWidget(1, self.pay_button)
+                self.pay_button.setVisible(True)
+            if self.update_or_pay_button.isVisible():
+                self.button_layout.removeWidget(self.update_or_pay_button)
+                self.update_or_pay_button.setVisible(False)
+        else:
+            if self.update_or_pay_button.isVisible():
+                self.button_layout.removeWidget(self.update_or_pay_button)
+                self.update_or_pay_button.setVisible(False)
+            if self.pay_button.isVisible():
+                self.button_layout.removeWidget(self.pay_button)
+                self.pay_button.setVisible(False)
+
 def update_order_item_amount(self):
     spinbox = self.sender()
     order_item = self.dish_spinboxes[spinbox]
     if spinbox.value() == 0:
-        msg = QMessageBox.question(self, "Подтверждение", f"Удалить блюдо {order_item.dish.dish_name} из заказа?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        if msg == QMessageBox.StandardButton.Yes:
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Подтверждение")
+        msg.setText(f"Удалить блюдо {order_item.dish.dish_name} из заказа?")
+        msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        yes_button = msg.button(QMessageBox.StandardButton.Yes)
+        no_button = msg.button(QMessageBox.StandardButton.No)
+        yes_button.setText("Да")
+        no_button.setText("Нет")
+        result = msg.exec()
+
+        if result == QMessageBox.StandardButton.Yes:
             OrderService().delete_order_item(order_item, self.order.id_order)
             self.order.order_items.remove(order_item)
             self.ui_update_dishes_layout()
             update_dish_sum(self)
+            self.update_button_visibility()
+            check_and_update_order_status(self)
         else:
             spinbox.setValue(order_item.amount)
             return
     order_item.amount = spinbox.value()
     OrderService().update_order_item_amount(order_item)
     update_dish_sum(self)
+    self.update_button_visibility()
+    check_and_update_order_status(self)
 
 def delete_dish(self, order_item, id_order):
-    msg = QMessageBox.question(self, "Подтверждение", f"Удалить блюдо {order_item.dish.dish_name} из заказа?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-    if msg == QMessageBox.StandardButton.Yes:
+    msg = QMessageBox(self)
+    msg.setWindowTitle("Подтверждение")
+    msg.setText(f"Удалить блюдо {order_item.dish.dish_name} из заказа?")
+    msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+    yes_button = msg.button(QMessageBox.StandardButton.Yes)
+    no_button = msg.button(QMessageBox.StandardButton.No)
+    yes_button.setText("Да")
+    no_button.setText("Нет")
+    result = msg.exec()
+
+    if result == QMessageBox.StandardButton.Yes:
         OrderService().delete_order_item(order_item, id_order)
         self.order.order_items.remove(order_item)
-        self.ui_update_dishes_layout() 
+        self.ui_update_dishes_layout()
+        update_dish_sum(self)
+        self.update_button_visibility()
+        check_and_update_order_status(self)
     else:
         pass
 
@@ -65,9 +112,9 @@ def update_dishes_combobox(self):
 
 def add_dish_to_order(self):
     dish_index = self.choose_dish_combobox.currentIndex()
-    dish = self.dishes[dish_index - 1]
     if dish_index == 0:
         return
+    dish = self.dishes[dish_index - 1]
     dish = DishService().get_dish_by_id(dish.id_dish)
     matching_item = next(
         (item for item in self.order.order_items 
@@ -77,20 +124,22 @@ def add_dish_to_order(self):
     if matching_item:
         matching_item.amount += 1
         OrderService().update_order_item_amount(matching_item)
-        self.ui_update_dishes_layout()
-        update_dish_sum(self)
-        self.choose_dish_combobox.setCurrentIndex(0)
-        return
     else:
         id_order_item = OrderService().add_dish_to_order(self.order.id_order, dish)
         order_item = OrderService().get_order_item_by_id(id_order_item)
         if order_item is not None:
             self.order.order_items.append(order_item)
-            OrderService().update_order_status(self.order, OrderStatus.COOKING)
-            self.ui_update_dishes_layout()
-            update_dish_sum(self)
-            self.choose_dish_combobox.setCurrentIndex(0)
-            return
+    
+    if self.order.status == OrderStatus.COOKED:
+        OrderService().update_order_status(self.order, OrderStatus.COOKING)
+        self.order._Order__status = OrderStatus.COOKING  # Используем внутренний атрибут для обновления статуса
+        self.update_or_pay_button.setText("Отправить на кухню")
+        self.adding_dish_mode = True
+
+    self.ui_update_dishes_layout()
+    update_dish_sum(self)
+    self.choose_dish_combobox.setCurrentIndex(0)
+    update_button_visibility(self)
 
 def update_order_items_and_order_status(self):
     if not self.order.order_items:
@@ -101,8 +150,13 @@ def update_order_items_and_order_status(self):
     open_order_list_window(self)
 
 def update_order_status(self):
-    self.update_or_pay_button.setText("Оплатить заказ")
     if OrderService().update_order_status(self.order, OrderStatus.CLOSED):
         open_order_list_window(self)
     else:
         QMessageBox.critical(self, "Ошибка", "Ошибка при закрытии заказа")
+
+def check_and_update_order_status(self):
+    if all(item.status == DishStatus.COOKED for item in self.order.order_items):
+        OrderService().update_order_status(self.order, OrderStatus.COOKED)
+        self.order._Order__status = OrderStatus.COOKED  # Используем внутренний атрибут для обновления статуса
+        self.update_button_visibility()

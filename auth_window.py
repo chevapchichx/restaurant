@@ -60,7 +60,6 @@ if __name__ == "__main__":
 
 
 # password = b'1672'
- 
 # salt = bcrypt.gensalt()
 # hashed = bcrypt.hashpw(password, salt)
 # print(hashed)

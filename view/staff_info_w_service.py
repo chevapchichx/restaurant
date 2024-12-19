@@ -9,8 +9,17 @@ def open_staff_list_window(self):
 
 def delete_staff(self):
     from view.staff_list_window import StaffListWindow
-    msg = QMessageBox.question(self, "Подтверждение", f"Удалить сотрудника {self.staff.full_name}?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-    if msg == QMessageBox.StandardButton.Yes:
+    msg = QMessageBox(self)
+    msg.setWindowTitle("Подтверждение")
+    msg.setText(f"Скрыть сотрудника {self.staff.full_name}?")
+    msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+    yes_button = msg.button(QMessageBox.StandardButton.Yes)
+    no_button = msg.button(QMessageBox.StandardButton.No)
+    yes_button.setText("Да")
+    no_button.setText("Нет")
+    result = msg.exec()
+
+    if result == QMessageBox.StandardButton.Yes:
         user_service = UserService()
         result = user_service.update_deleted_status_staff(self.staff.id_staff)
         if result == "":
