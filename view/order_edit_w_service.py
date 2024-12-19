@@ -11,14 +11,21 @@ from functools import partial
 def open_order_list_window(self):
     from view.order_list_window import OrderListWindow
     self.waiter_window = OrderListWindow()
+    self.waiter_window.ui_update_order_list_table()
+    self.waiter_window.show()
     self.close()
-    # self.waiter_window.show()
 
 def update_dish_sum(self):
     total_sum = 0
     for order_item in self.order.order_items:
         total_sum += order_item.dish_sum
     self.total_sum_label.setText(f"Итого: {total_sum} руб.")
+
+def update_or_pay_order(self):
+    if self.adding_dish_mode == True:
+        update_order_items_and_order_status(self)
+    else:
+        update_order_status(self)
 
 def update_order_item_amount(self):
     spinbox = self.sender()
@@ -79,30 +86,23 @@ def add_dish_to_order(self):
         order_item = OrderService().get_order_item_by_id(id_order_item)
         if order_item is not None:
             self.order.order_items.append(order_item)
+            OrderService().update_order_status(self.order, OrderStatus.COOKING)
             self.ui_update_dishes_layout()
             update_dish_sum(self)
             self.choose_dish_combobox.setCurrentIndex(0)
             return
 
-def update_order_items_status(self):
+def update_order_items_and_order_status(self):
     if not self.order.order_items:
         QMessageBox.critical(self, "Ошибка", "Заказ пуст")
         return
     OrderService().update_order_items_status(self.order, DishStatus.COOKING)
-    self.close()
+    OrderService().update_order_status(self.order, OrderStatus.COOKING)
+    open_order_list_window(self)
 
 def update_order_status(self):
-    from view.order_list_window import OrderListWindow
-    OrderService().update_order_status(self.order, OrderStatus.CLOSED)
-    self.waiter_window = OrderListWindow()
-    self.close()
-    
-
-
-
-
-
-
-
-
-
+    self.update_or_pay_button.setText("Оплатить заказ")
+    if OrderService().update_order_status(self.order, OrderStatus.CLOSED):
+        open_order_list_window(self)
+    else:
+        QMessageBox.critical(self, "Ошибка", "Ошибка при закрытии заказа")

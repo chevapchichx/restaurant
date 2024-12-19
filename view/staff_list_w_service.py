@@ -15,4 +15,3 @@ def open_add_staff_window(self):
     self.add_staff_window = AddStaffWindow()
     self.add_staff_window.show()
     self.close()
-

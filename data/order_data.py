@@ -35,8 +35,7 @@ class Order:
         self.time = order_time
         self.__status = int(order_status)
         self.order_items = order_items
-        # self.dishes = dishes
-        
+                
 
     def __get_status_name(self): 
         if self.status == OrderStatus.CREATED:

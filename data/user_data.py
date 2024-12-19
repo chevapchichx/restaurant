@@ -34,6 +34,7 @@ class User:
         self.login = str(login)
         self.password = str(password)
 
+
     def __get_role_name(self): 
         if self.role == UserRole.WAITER:
             return "Официант"

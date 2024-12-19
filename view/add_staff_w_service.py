@@ -17,11 +17,10 @@ def check_fields(self):
         self.add_staff_button.setEnabled(False)
 
 def update_or_add_staff(self):
-    if self.__adding_staff_mode == True:
+    if self.__adding_staff_mode:
         add_staff(self)
     else:
         update_staff(self)
-
 
 def add_staff(self):
     login = self.login_input.text()
@@ -48,7 +47,6 @@ def add_staff(self):
     
     if UserService().add_staff(login, password, role, last_name, first_name, middle_name, job, birth_date, address, phone_number, salary) == "":
         open_staff_list_window(self)
-        # self.close()
     else:
         self.error_label.setText("Что-то пошло не так!")
 
@@ -75,7 +73,6 @@ def update_staff(self):
     
     if UserService().update_staff(login, password, role, last_name, first_name, middle_name, job, birth_date, address, phone_number, salary) == "":
         open_staff_list_window(self)
-        # self.close()
     else:
         self.error_label.setText("Что-то пошло не так!")
 
@@ -108,5 +105,6 @@ def check_login(self):
                 self.error_label.setText("")
                 pass
     else:
+        self.__adding_staff_mode = True
         self.error_label.setText("")
         pass

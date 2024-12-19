@@ -21,7 +21,6 @@ class DishService:
 
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
-
     
     def get_dishes_by_category(self, id_menu_category):
         data_service = DatabaseService()

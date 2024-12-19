@@ -146,10 +146,3 @@ class AddStaffWindow(QWidget):
         self.address_input.textChanged.connect(lambda: check_fields(self))
         self.phone_input.textChanged.connect(lambda: check_fields(self))
         self.salary_input.textChanged.connect(lambda: check_fields(self))
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = AddStaffWindow()
-    window.show()
-    sys.exit(app.exec())
-

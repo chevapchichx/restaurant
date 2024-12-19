@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 
 from data.query_result_data import QueryResult 
 from data.user_data import UserRole
-from data.order_item_data import DishStatus
+from data.order_data import OrderStatus
 
 
 config = configparser.ConfigParser()
@@ -67,7 +67,7 @@ class DatabaseService:
         try:
             with self.__engine.connect() as conn:
                 query = text("""
-                    SELECT m.id, m.dish, m.price, m.weight, m.id_menu_category, mc.category, o_m.id, o_m.amount, o_m.dish_status, o_m.id_order
+                    SELECT m.id, m.dish, m.price, m.weight, m.id_menu_category, mc.category, o_m.id, o_m.amount, o_m.dish_status, o_m.id_order, o_m.added_time
                     FROM orders o
                     JOIN orders_menu o_m ON o.id = o_m.id_order
                     JOIN menu m ON m.id = o_m.id_dish
@@ -80,37 +80,58 @@ class DatabaseService:
             return QueryResult(None, e)
     
     def create_new_order_db(self, id_staff):
+        """
+        Создает новый заказ в базе данных.
+
+        Аргументы:
+        id_staff - идентификатор сотрудника, создающего заказ
+
+        Возвращает:
+        QueryResult - объект, содержащий результат выполнения запроса и возможную ошибку
+        """
         try:
-            with self.__engine.begin() as conn:
+            with self.__engine.begin() as conn:  # Начинается транзакция
+                # SQL-запрос для вставки нового заказа в таблицу orders
                 query = text("""
                     INSERT INTO orders (id_staff, order_date, order_time, guests)
                     VALUES (:id_staff, CURDATE(), CURTIME(), 0)
                 """)
-                conn.execute(query, {"id_staff": id_staff})
+                conn.execute(query, {"id_staff": id_staff})  # Выполняется запрос, передавая id_staff
 
+                # SQL-запрос для получения последнего вставленного идентификатора заказа
                 select_query = text("SELECT LAST_INSERT_ID() AS last_id")
-                result = conn.execute(select_query).fetchone()
-                order_id = result[0]  
+                result = conn.execute(select_query).fetchone()  # Выполняется запрос, получаем результат
+                order_id = result[0]  # Извлекается идентификатор заказа
 
+                # SQL-запрос для получения максимального номера заказа, который еще не закрыт
                 get_max_order_num_query = text("SELECT MAX(order_num) FROM orders where order_status < 4")
-                result = conn.execute(get_max_order_num_query).fetchone()
-                order_num = result[0] + 1
-                if order_num > 100:
-                    order_num = 1
+                result = conn.execute(get_max_order_num_query).fetchone()  # Выполняется запрос, получаем результат
+                order_num = result[0]  # Извлекается максимальный номер заказа
 
+                # Если максимальный номер заказа равен None или больше 100, устанавливается в 1
+                if order_num is None or order_num > 100:
+                    order_num = 1
+                else:
+                    order_num += 1  # Иначе увеличивается номер заказа на 1
+
+                # SQL-запрос для обновления номера заказа и статуса заказа
                 update_query = text("""
                     UPDATE orders
-                    SET order_num = :order_num
+                    SET order_num = :order_num, order_status = :order_status
                     WHERE id = :order_id
                 """)
+                # Выполняется запрос, передавая order_id, order_num и статус заказа
                 conn.execute(update_query, {
                     "order_id": order_id, 
-                    "order_num": order_num
-                    })
+                    "order_num": order_num,
+                    "order_status": OrderStatus.CREATED
+                })
+
+                # SQL-запрос для получения идентификатора и номера заказа
                 result = conn.execute(text("SELECT id, order_num FROM orders WHERE id = :order_id"), {"order_id": order_id}).fetchone()
-                return QueryResult(result, None)
+                return QueryResult(result, None)  # Возвращается результат выполнения запроса
         except Exception as e:
-            return QueryResult(None, e)
+            return QueryResult(None, e)  # В случае ошибки возвращается объект QueryResult с ошибкой
 
     def get_is_table_occupied_db(self, table_id):
         try:
@@ -151,7 +172,9 @@ class DatabaseService:
                     "guests": guests,
                     "id_order": id_order
                 })
-                select_query = text("SELECT id, order_num, guests, id_staff, id_table, order_date, order_time, order_status FROM orders WHERE id = :id_order")
+                select_query = text("""SELECT id, order_num, guests, id_staff, id_table, order_date, 
+                                    order_time, order_status FROM orders WHERE id = :id_order
+                                    """)
                 result = conn.execute(select_query, {"id_order": id_order}).fetchone()
             return QueryResult(result, None)
         except Exception as e:
@@ -230,8 +253,8 @@ class DatabaseService:
         try:
             with self.__engine.begin() as conn:
                 query = text("""
-                    INSERT INTO orders_menu (id_order, id_dish, amount, dish_status)
-                    VALUES (:id_order, :id_dish, 1, 1)
+                    INSERT INTO orders_menu (id_order, id_dish, amount, dish_status, added_time)
+                    VALUES (:id_order, :id_dish, 1, 1, NOW())
                 """)
                 conn.execute(query, {
                     "id_order": id_order,
@@ -246,7 +269,7 @@ class DatabaseService:
         try:
             with self.__engine.connect() as conn:
                 query = text("""
-                    SELECT m.id, m.dish, m.price, m.weight, m.id_menu_category, mc.category, o_m.id, o_m.amount, o_m.dish_status, o_m.id_order
+                    SELECT m.id, m.dish, m.price, m.weight, m.id_menu_category, mc.category, o_m.id, o_m.amount, o_m.dish_status, o_m.id_order, o_m.added_time
                     FROM menu m
                     JOIN orders_menu o_m ON m.id = o_m.id_dish
                     JOIN menu_category mc ON m.id_menu_category = mc.id
@@ -264,6 +287,7 @@ class DatabaseService:
                     UPDATE orders_menu
                     SET dish_status = :status
                     WHERE id_order = :id_order
+                    and dish_status != 3
                 """)
                 conn.execute(query, {
                     "status": status,
@@ -278,7 +302,7 @@ class DatabaseService:
             with self.__engine.connect() as conn:
                 query = text("""
                     SELECT o_m.id, o_m.id_dish, m.dish, m.price, m.weight, m.id_menu_category, mc.category, 
-                             o_m.amount, o_m.dish_status, o_m.id_order
+                             o_m.amount, o_m.dish_status, o_m.id_order, o_m.added_time
                     FROM orders_menu o_m
                     JOIN menu m ON o_m.id_dish = m.id
                     JOIN menu_category mc ON m.id_menu_category = mc.id
@@ -324,7 +348,7 @@ class DatabaseService:
         try:
             with self.__engine.connect() as conn:
                 query = text("""
-                    SELECT id, role, job, last_name, first_name, middle_name, birth_date, address, phone_number, salary
+                    SELECT id, role, job, last_name, first_name, middle_name, birth_date, address, phone_number, salary, login
                     FROM staff
                     where deleted is null
                 """)
@@ -414,10 +438,22 @@ class DatabaseService:
                 return QueryResult(None, None)
         except Exception as e:
             return QueryResult(None, e)
-        
-
-                
-        
-
-
-
+    
+    def check_or_update_order_items_status_in_order_db(self, id_order):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    UPDATE orders o
+                    SET o.order_status = 3
+                    WHERE o.id= :id_order
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM orders_menu o_m
+                        WHERE o_m.id_order = o.id
+                        AND o_m.dish_status != 3
+                    )
+                """)
+                conn.execute(query, {"id_order": id_order})
+                return QueryResult(None, None)
+        except Exception as e:
+            return QueryResult(None, e)

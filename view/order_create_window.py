@@ -18,8 +18,8 @@ class OrderCreateWindow(QWidget):
 
     def ui_order_create_window(self):
         self.setWindowTitle(f"Новый заказ {self.order_num}")
-        self.setGeometry(400, 230, 650, 450)
-        self.setFixedSize(650, 450)
+        self.setGeometry(400, 230, 680, 450)
+        self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
@@ -64,6 +64,7 @@ class OrderCreateWindow(QWidget):
             button.clicked.connect(lambda _, b=button: update_guests_button(self, b))
             self.guests_number_buttons.append(button)
             self.guests_number_layout.addWidget(button, 0, i, alignment=Qt.AlignmentFlag.AlignCenter)
+
         guest_layout.addLayout(self.guests_number_layout)
 
         self.guests_button = QLabel("Количество гостей: не выбрано")
@@ -73,19 +74,15 @@ class OrderCreateWindow(QWidget):
         button_layout = QHBoxLayout()
         button_layout.addStretch(1)
         self.next_button = QPushButton("Добавить заказ")
+        self.next_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         button_layout.addWidget(self.next_button)
-        self.next_button.setFixedHeight(30)
-        # if self.selected_table is None or self.selected_guests == 0:
-        #     self.next_button.setEnabled(False)
-        # else:
+        self.next_button.setFixedHeight(25)
+        self.next_button.setFixedWidth(120)
         self.next_button.clicked.connect(lambda: add_order_in_window(self, id_order=self.id_order, table_id=self.selected_table, guests=self.selected_guests))
-
-            
 
         main_layout.addLayout(guest_layout)
         main_layout.setSpacing(60)
         main_layout.addLayout(table_layout)
-        # main_layout.addStretch()
         main_layout.addLayout(button_layout)
 
         self.setLayout(main_layout)

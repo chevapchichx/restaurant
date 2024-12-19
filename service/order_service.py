@@ -38,7 +38,6 @@ class OrderService:
                     for row in result]
                 return orders
             else:
-                QMessageBox.critical(None, "Ошибка", "Заказы не найдены")
                 return None
         else:
             QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
@@ -71,7 +70,8 @@ class OrderService:
                                 dish=dish,
                                 amount=row[7],
                                 status=row[8],
-                                id_order=row[9]
+                                id_order=row[9],
+                                added_time=row[10]
                             )
                             order_items.append(order_item)
                     order = Order(
@@ -97,14 +97,29 @@ class OrderService:
             return None
 
     def create_new_order(self, id_staff):
-        data_service = DatabaseService()
-        query = data_service.create_new_order_db(id_staff)
-        if query.error is None:
-            result = query.result
-            return result
-        else:
-            QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
-            return None
+        """
+        Создает новый заказ в базе данных.
+
+        Аргументы:
+        self - ссылка на экземпляр класса, из которого вызывается функция
+        id_staff - идентификатор сотрудника, создающего заказ
+
+        Возвращает:
+        result - результат выполнения запроса, если заказ успешно создан
+        None - если заказ не был создан или произошла ошибка
+        """
+        data_service = DatabaseService()  # Создается экземпляр DatabaseService для работы с базой данных
+        query = data_service.create_new_order_db(id_staff)  # Вызывается метод для создания нового заказа в базе данных
+
+        if query.error is None:  # Проверяется, произошла ли ошибка при выполнении запроса
+            result = query.result  # Получаем результат выполнения запроса
+            if result:  # Если результат не пустой (заказ успешно создан)
+                return result  # Возвращается результат
+            else:  # Если результат пустой (заказ не был создан)
+                return None  # Возвращается None
+        else:  # Если произошла ошибка при выполнении запроса
+            QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")  # Отображается сообщение об ошибке
+            return None  # Возвращается None
 
     def get_is_table_occupied(self, table_id):
         data_service = DatabaseService()
@@ -137,7 +152,8 @@ class OrderService:
                     guests=result[2],
                     staff=User(
                         id_staff=result[3],
-                        role=0, job=None, last_name=None, first_name=None, middle_name=None, birth_date=None, address=None, phone_number=None, salary=0, login=None, password=None),
+                        role=0, job=None, last_name=None, first_name=None, middle_name=None, birth_date=None, 
+                        address=None, phone_number=None, salary=0, login=None, password=None),
                     table=Table(
                         id_table=result[4],
                         number_of_seats=0),
@@ -192,7 +208,8 @@ class OrderService:
                     dish=dish,
                     amount=result[7],
                     status=result[8],
-                    id_order=result[9]
+                    id_order=result[9],
+                    added_time=result[10]
                 )
                 return order_item
             else:
@@ -238,7 +255,8 @@ class OrderService:
                             name=row[6])),
                     amount=row[7],
                     status=row[8],
-                    id_order=row[9]
+                    id_order=row[9],
+                    added_time=row[10]
                     )
                 for row in result]
                 return order_items
@@ -261,6 +279,15 @@ class OrderService:
     def update_order_status(self, order, status):
         data_service = DatabaseService()
         query = data_service.update_order_status_db(order, status)
+        if query.error is None:
+            return True
+        else:
+            QMessageBox.critical(None, "Ошибка", f"Ошибка подключения к базе данных: {query.error}")
+            return None
+
+    def check_or_update_order_items_status_in_order(self, id_order):
+        data_service = DatabaseService()
+        query = data_service.check_or_update_order_items_status_in_order_db(id_order)
         if query.error is None:
             return True
         else:

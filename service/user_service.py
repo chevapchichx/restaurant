@@ -61,7 +61,8 @@ class UserService(metaclass=SingletonMeta):
                     address=staff[7],
                     phone_number=staff[8],
                     salary=staff[9],
-                    login=0, password=0
+                    login=staff[10], 
+                    password=0
                     )
                     for staff in result]
                 return staffs
@@ -143,4 +144,3 @@ class UserService(metaclass=SingletonMeta):
             return ""
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
-    

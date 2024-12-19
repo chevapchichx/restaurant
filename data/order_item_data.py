@@ -20,12 +20,13 @@ class OrderItem:
     def dish_sum(self):
         return self.dish.price * self.amount
     
-    def __init__(self, id_order_item, dish, amount, status, id_order):
+    def __init__(self, id_order_item, dish, amount, status, id_order, added_time):
         self.id_order_item = int(id_order_item)
         self.dish = dish
         self.amount = int(amount)
         self.__status = status
         self.id_order = int(id_order)
+        self.added_time = added_time
         
 
     def __get_status_name(self): 

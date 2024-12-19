@@ -29,7 +29,9 @@ class AuthWindow(QWidget):
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
 
         self.entry_button = QPushButton("Войти")
-        self.entry_button.setFixedHeight(30)
+        self.entry_button.setFixedHeight(25)
+        self.entry_button.setFixedWidth(70)
+        self.entry_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         self.entry_button.clicked.connect(lambda: get_auth(self))
   
         form_layout = QVBoxLayout()
@@ -39,7 +41,7 @@ class AuthWindow(QWidget):
         form_layout.addWidget(self.password_input)
 
         button_layout = QHBoxLayout()
-        button_layout.addStretch(1)
+        button_layout.addStretch(1)                                                                                    
         button_layout.addWidget(self.entry_button)
         button_layout.addStretch(1)
 
@@ -61,5 +63,4 @@ if __name__ == "__main__":
  
 # salt = bcrypt.gensalt()
 # hashed = bcrypt.hashpw(password, salt)
-
 # print(hashed)

@@ -9,12 +9,12 @@ def update_table_button(self, button):
         QMessageBox.critical(self, "Ошибка", f"Стол {table_id} занят")
     else:
         self.selected_table = table_id
-        self.table_button.setText(f"Стол: {button.text()}")
+        self.table_button.setText(f"Стол: <span style='font-size: 14px; color: #558dbb; font-weight: bold;'>{button.text()}</span>")
 
 def update_guests_button(self, button):
     guests = int(button.text())
     self.selected_guests = guests
-    self.guests_button.setText(f"Количество гостей: {button.text()}")
+    self.guests_button.setText(f"Количество гостей: <span style='font-size: 14px; color: #558dbb; font-weight: bold;'>{button.text()}</span>")
     update_table_buttons(self)
 
 def update_table_buttons(self):
@@ -31,8 +31,6 @@ def add_order_in_window(self, id_order, table_id, guests):
     order = order_service.add_order(id_order, table_id, guests)
     if order is not None:
         self.order_edit_window = OrderEditWindow(order.id_order)
-        self.order_list_window = OrderListWindow()
-        self.order_list_window.show()
         self.order_edit_window.show()
         self.close()
     else:

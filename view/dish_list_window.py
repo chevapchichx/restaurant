@@ -3,9 +3,6 @@ from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMessageBox,
                             QPushButton, QTableWidget, QTableWidgetItem,
                             QVBoxLayout, QWidget)
 
-import sys
-import os
-# sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))  #test
 from service.dish_service import *
 from service.order_service import *
 from service.user_service import UserRole, UserService
@@ -29,8 +26,13 @@ class DishListWindow(QWidget):
         self.main_layout = QVBoxLayout(self)
 
         top_layout = QHBoxLayout()
-        self.info_button = QPushButton("Кабинет")
+        self.info_button = QPushButton("ЛК")
+        self.info_button.setFixedSize(40, 25)
+        self.info_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
+
         self.exit_button = QPushButton("Выйти")
+        self.exit_button.setFixedSize(60, 25)
+        self.exit_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
 
         top_layout.addStretch()
         self.user_name_label = QLabel(f"{self.user.role_name}: {self.user.first_name} {self.user.last_name}")
@@ -44,12 +46,12 @@ class DishListWindow(QWidget):
         self.dish_table.setColumnWidth(1, 80)  #60
         self.dish_table.setColumnWidth(2, 80)  #80 
         self.dish_table.setColumnWidth(3, 90)  #80
-        self.dish_table.setColumnWidth(4, 110)  #110
-        self.dish_table.setHorizontalHeaderLabels(["Блюдо", "Вес", "Количество", "Статус", ""])
+        self.dish_table.setColumnWidth(4, 120)  #110
+        self.dish_table.setHorizontalHeaderLabels(["Блюдо", "Вес", "Количество", "Время", ""])
         self.dish_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.dish_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
 
-        self.ui_update_dish_table()
+        self.ui_update_dish_list_table()
 
         exit_layout = QHBoxLayout()
         exit_layout.addStretch()
@@ -62,13 +64,13 @@ class DishListWindow(QWidget):
         self.info_button.clicked.connect(lambda: open_user_info_window(self))
         self.exit_button.clicked.connect(lambda: open_auth_window(self))
 
-    def ui_update_dish_table(self):
-        filtered_order_items = [order_item for order_item in self.order_items if order_item.status != DishStatus.COOKED]
-        filtered_order_items = {order_item.id_order_item: order_item for order_item in filtered_order_items}
+    def ui_update_dish_list_table(self):
+        filtered_order_items = [order_item for order_item in self.order_items if order_item.status == DishStatus.COOKING]
+        filtered_order_items = sorted(filtered_order_items, key=lambda item: item.added_time)
 
         self.dish_table.setRowCount(len(filtered_order_items))
 
-        for i, order_item in enumerate(filtered_order_items.values()):       
+        for i, order_item in enumerate(filtered_order_items):       
             item_dish_name = QTableWidgetItem(order_item.dish.dish_name)
             item_dish_name.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.dish_table.setItem(i, 0, item_dish_name)
@@ -81,31 +83,11 @@ class DishListWindow(QWidget):
             item_amount.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.dish_table.setItem(i, 2, item_amount)
 
-            item_dish_status = QTableWidgetItem(order_item.status_name)
-            item_dish_status.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.dish_table.setItem(i, 3, item_dish_status)
+            item_dish_time = QTableWidgetItem(order_item.added_time.strftime("%H:%M:%S"))
+            item_dish_time.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.dish_table.setItem(i, 3, item_dish_time)
             
             if order_item.status == DishStatus.COOKING:
                 update_button = QPushButton("Приготовлено")
                 update_button.clicked.connect(lambda _, order_item=order_item: update_item_order_status(self, order_item))
                 self.dish_table.setCellWidget(i, 4, update_button)
-
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-#     user = User(
-#         id_staff=1,
-#         role=2,
-#         job="Официант",
-#         last_name="Иванов",
-#         first_name="Иван",
-#         middle_name="Иванович",
-#         birth_date="1990-11-01",
-#         address="ул. Примерная, д. 1cnhcnccnncjcnhxdxhhxbbchbchhbc",
-#         phone_number="+7 123 456 78 90",
-#         salary="50000",
-#         login="ivanov",
-#         password=""
-#     )
-#     window = DishListWindow()
-#     window.show()
-#     sys.exit(app.exec())

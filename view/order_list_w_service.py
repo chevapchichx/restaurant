@@ -19,20 +19,29 @@ def open_user_info_window(self):
 def open_order_edit_window(self, id_order):
     from view.order_edit_window import OrderEditWindow
     self.order_details_window = OrderEditWindow(id_order)
-    self.order_details_window.exec()
+    self.order_details_window.show()
+    self.close()
 
 def create_new_order(self, id_staff):
-    from view.order_create_window import OrderCreateWindow
-    order_service = OrderService()
-    # user = User_Service().authorised_user
-    new_order = order_service.create_new_order(id_staff)
-    if new_order:
+    """
+    Создает новый заказ и открывает окно для создания заказа.
+
+    Аргументы:
+    self - ссылка на экземпляр класса, из которого вызывается функция
+    id_staff - идентификатор сотрудника, создающего заказ
+    """
+    from view.order_create_window import OrderCreateWindow  # Импортируется окно создания заказа
+    order_service = OrderService()  # Создается экземпляр OrderService для работы с заказами
+    new_order = order_service.create_new_order(id_staff)  # Вызывается метод для создания нового заказа
+
+    if new_order:  # Если заказ успешно создан
+        # Создается и отображается окно создания заказа, передавая идентификатор и номер заказа
         self.create_order_window = OrderCreateWindow(new_order[0], new_order[1])
         self.create_order_window.show()
-        self.close()
+        self.close()  # Закрывается текущее окно списка заказов
     else:
+        # Если заказ не удалось создать, отображается сообщение об ошибке
         QMessageBox.critical(self, "Ошибка", "Не удалось создать новый заказ")
-
 
 def open_staff_list_window(self):
     from view.staff_list_window import StaffListWindow

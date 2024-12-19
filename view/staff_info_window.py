@@ -51,12 +51,17 @@ class StaffInfoWindow(QWidget):
         self.salary_label = QLabel(str(self.staff.salary))
         details_layout.addWidget(self.salary_label, 3, 2)
 
-        details_layout.addWidget(QLabel("Адрес:"), 0, 3)
+        details_layout.addWidget(QLabel("Логин:"), 0, 3)
+        self.login_label = QLabel(self.staff.login)
+        self.login_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        details_layout.addWidget(self.login_label, 0, 4)
+
+        details_layout.addWidget(QLabel("Адрес:"), 1, 3)
         self.address_label = QLabel(self.staff.address)
         self.address_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.address_label.setWordWrap(True)
         self.address_label.setFixedSize(170, 50)
-        details_layout.addWidget(self.address_label, 0, 4)
+        details_layout.addWidget(self.address_label, 1, 4)
 
         main_layout.addLayout(details_layout)
 
@@ -70,7 +75,4 @@ class StaffInfoWindow(QWidget):
         self.back_button = QPushButton("Назад")
         self.back_button.clicked.connect(lambda: open_staff_list_window(self))
         back_button_layout.addWidget(self.back_button)
-        main_layout.addLayout(back_button_layout)
-
-
-        
+        main_layout.addLayout(back_button_layout)     

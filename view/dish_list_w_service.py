@@ -16,5 +16,6 @@ def open_user_info_window(self):
 def update_item_order_status(self, order_item):
     order_service = OrderService()
     order_service.update_item_order_status(order_item, DishStatus.COOKED)
+    order_service.check_or_update_order_items_status_in_order(order_item.id_order)
     self.order_items = order_service.get_order_items()
-    self.ui_update_dish_table()
+    self.ui_update_dish_list_table()
