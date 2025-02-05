@@ -6,7 +6,7 @@ from service.user_service import UserService
 from view.auth_w_service import *
 
 
-class AuthWindow(QWidget):
+class AuthWindow(QWidget):    
     def __init__(self):
         super().__init__()
         self.user = UserService().authorised_user
