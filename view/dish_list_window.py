@@ -10,6 +10,7 @@ from service.user_service import UserRole, UserService
 from view.dish_list_w_service import *
 
 
+
 class DishListWindow(QWidget):
     def __init__(self):
         super().__init__()

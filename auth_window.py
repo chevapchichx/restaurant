@@ -59,7 +59,7 @@ if __name__ == "__main__":
     sys.exit(app.exec())
 
 
-# password = b'1672'
+# password = b'101112'
 # salt = bcrypt.gensalt()
 # hashed = bcrypt.hashpw(password, salt)
 # print(hashed)
