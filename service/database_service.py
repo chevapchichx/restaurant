@@ -1,4 +1,4 @@
-import configparser
+﻿import configparser
 import os
 from sqlalchemy import create_engine, text
 
@@ -7,10 +7,10 @@ from data.user_data import UserRole
 from data.order_data import OrderStatus
 
 
-config = configparser.ConfigParser()
-config.read(os.path.join(os.path.dirname(
-    os.path.dirname(os.path.abspath(__file__))), 'config.txt'))
-db_url = config['database']['db_url_2']
+ # config = configparser.configparser()
+ # config.read(os.path.join(os.path.dirname(
+ #     os.path.dirname(os.path.abspath(__file__))), 'config.txt'))
+db_url = "mysql+pymysql://root:root@localhost/restaurant"
 
 
 class DatabaseService:
