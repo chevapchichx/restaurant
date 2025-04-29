@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt, QTimer, QTime
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMessageBox,
                             QPushButton, QTableWidget, QTableWidgetItem,
                             QVBoxLayout, QWidget)
@@ -8,7 +8,6 @@ from service.dish_service import *
 from service.order_service import *
 from service.user_service import UserRole, UserService
 from view.dish_list_w_service import *
-
 
 
 class DishListWindow(QWidget):
@@ -53,9 +52,22 @@ class DishListWindow(QWidget):
         self.dish_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.dish_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
 
+        filtered_order_items = [order_item for order_item in self.order_items if order_item.status == DishStatus.COOKING]
+        
+        total_dishes = len(filtered_order_items)
+        total_cooking_time = 0
+        for item in filtered_order_items:
+            time_diff = datetime.datetime.now() - item.added_time
+            total_cooking_time += time_diff.total_seconds()
+
+        cooking_time = total_cooking_time / (total_dishes if total_dishes > 0 else 1)
+        
+        self.stats_label = QLabel(f"Всего блюд готовится: {total_dishes} | Среднее время приготовления: {int(cooking_time/60)} мин")
+        
         self.ui_update_dish_list_table()
 
         exit_layout = QHBoxLayout()
+        exit_layout.addWidget(self.stats_label)
         exit_layout.addStretch()
         exit_layout.addWidget(self.exit_button)
 
@@ -94,6 +106,8 @@ class DishListWindow(QWidget):
                 update_button = QPushButton("Приготовлено")
                 update_button.clicked.connect(lambda _, order_item=order_item: update_item_order_status(self, order_item))
                 self.dish_table.setCellWidget(i, 4, update_button)
+            
+        self.dish_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
 
     def start_timer(self, item_dish_time, added_time):
         item_dish_time_ref = weakref.ref(item_dish_time)
