@@ -6,10 +6,9 @@ from data.query_result_data import QueryResult
 from data.user_data import UserRole
 from data.order_data import OrderStatus
 
-
- # config = configparser.configparser()
- # config.read(os.path.join(os.path.dirname(
- #     os.path.dirname(os.path.abspath(__file__))), 'config.txt'))
+# config = configparser.configparser()
+# config.read(os.path.join(os.path.dirname(
+#     os.path.dirname(os.path.abspath(__file__))), 'config.txt'))
 db_url = "mysql+pymysql://root:root@localhost/restaurant"
 
 
@@ -526,5 +525,168 @@ class DatabaseService:
                 """)
                 result = conn.execute(query).fetchall()
                 return QueryResult(result, None)
+        except Exception as e:
+            return QueryResult(None, e)
+
+    def update_password_db(self, login, password):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    UPDATE staff
+                    SET password = :password
+                    WHERE login = :login
+                """)
+                conn.execute(query, {
+                    "login": login,
+                    "password": password
+                })
+                return QueryResult(None, None)
+        except Exception as e:
+            return QueryResult(None, e)
+
+    def get_all_dishes_db(self):
+        try:
+            with self.__engine.connect() as conn:
+                query = text("""
+                    SELECT m.id, m.dish, m.price, m.weight, m.id_menu_category
+                    FROM menu m
+                    ORDER BY m.dish
+                """)
+                result = conn.execute(query).fetchall()
+                return QueryResult(result, None)
+        except Exception as e:
+            return QueryResult(None, e)
+
+    def add_dish_db(self, dish_name, price, weight, category_id):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    INSERT INTO menu (dish, price, weight, id_menu_category)
+                    VALUES (:dish_name, :price, :weight, :category_id)
+                """)
+                conn.execute(query, {
+                    "dish_name": dish_name,
+                    "price": price,
+                    "weight": weight,
+                    "category_id": category_id
+                })
+                return QueryResult(True, None)
+        except Exception as e:
+            return QueryResult(None, e)
+
+    def get_reservations_db(self, date=None):
+        try:
+            with self.__engine.connect() as conn:
+                if date:
+                    query = text("""
+                        SELECT id, customer_name, phone_number, guests, 
+                               reservation_date, reservation_time, id_table, status, notes
+                        FROM reservations
+                        WHERE reservation_date = :date
+                        ORDER BY reservation_time
+                    """)
+                    result = conn.execute(query, {"date": date}).fetchall()
+                else:
+                    query = text("""
+                        SELECT id, customer_name, phone_number, guests, 
+                               reservation_date, reservation_time, id_table, status, notes
+                        FROM reservations
+                        WHERE reservation_date >= CURDATE()
+                        ORDER BY reservation_date, reservation_time
+                    """)
+                    result = conn.execute(query).fetchall()
+                return QueryResult(result, None)
+        except Exception as e:
+            return QueryResult(None, e)
+
+    def add_reservation_db(self, reservation):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    INSERT INTO reservations 
+                    (customer_name, phone_number, guests, reservation_date, 
+                     reservation_time, id_table, status, notes)
+                    VALUES 
+                    (:customer_name, :phone_number, :guests, :reservation_date, 
+                     :reservation_time, :id_table, :status, :notes)
+                """)
+                conn.execute(query, {
+                    "customer_name": reservation.customer_name,
+                    "phone_number": reservation.phone_number,
+                    "guests": reservation.guests,
+                    "reservation_date": reservation.reservation_date,
+                    "reservation_time": reservation.reservation_time,
+                    "id_table": reservation.id_table,
+                    "status": reservation.status,
+                    "notes": reservation.notes
+                })
+                return QueryResult(True, None)
+        except Exception as e:
+            return QueryResult(None, e)
+
+    def update_reservation_status_db(self, reservation_id, status):
+        try:
+            with self.__engine.begin() as conn:
+                query = text("""
+                    UPDATE reservations
+                    SET status = :status
+                    WHERE id = :id
+                """)
+                conn.execute(query, {
+                    "id": reservation_id,
+                    "status": status
+                })
+                return QueryResult(True, None)
+        except Exception as e:
+            return QueryResult(None, e)
+
+    def check_table_availability_db(self, table_id, date, time, exclude_reservation_id=None):
+        try:
+            with self.__engine.connect() as conn:
+                # Check if there are any other reservations for this table at the same time
+                if exclude_reservation_id:
+                    query = text("""
+                        SELECT COUNT(*) FROM reservations
+                        WHERE id_table = :table_id
+                        AND reservation_date = :date
+                        AND reservation_time = :time
+                        AND status IN (1, 2) -- Pending or confirmed
+                        AND id != :exclude_id
+                    """)
+                    result = conn.execute(query, {
+                        "table_id": table_id,
+                        "date": date,
+                        "time": time,
+                        "exclude_id": exclude_reservation_id
+                    }).scalar()
+                else:
+                    query = text("""
+                        SELECT COUNT(*) FROM reservations
+                        WHERE id_table = :table_id
+                        AND reservation_date = :date
+                        AND reservation_time = :time
+                        AND status IN (1, 2) -- Pending or confirmed
+                    """)
+                    result = conn.execute(query, {
+                        "table_id": table_id,
+                        "date": date,
+                        "time": time
+                    }).scalar()
+
+                # Also check if the table is occupied by an active order
+                orders_query = text("""
+                    SELECT COUNT(*) FROM orders
+                    WHERE id_table = :table_id
+                    AND order_date = :date
+                    AND order_status < 4 -- Not closed
+                """)
+                orders_result = conn.execute(orders_query, {
+                    "table_id": table_id,
+                    "date": date
+                }).scalar()
+
+                # Table is available if there are no reservations or active orders
+                is_available = (result == 0 and orders_result == 0)
+                return QueryResult(is_available, None)
         except Exception as e:
             return QueryResult(None, e)

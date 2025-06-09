@@ -21,7 +21,7 @@ class DishService:
 
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
-    
+
     def get_dishes_by_category(self, id_menu_category):
         data_service = DatabaseService()
         query = data_service.get_dishes_by_category_db(id_menu_category)
@@ -40,8 +40,35 @@ class DishService:
                 return "Блюда не найдены"
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
-    
-    def get_dish_by_id(self, id_dish):    
+
+    def get_all_dishes(self):
+        data_service = DatabaseService()
+        query = data_service.get_all_dishes_db()
+        if query.error is None:
+            result = query.result
+            if result:
+                dishes = [Dish(
+                    id_dish=row[0],
+                    dish_name=row[1],
+                    price=row[2],
+                    weight=row[3],
+                    menu_category=row[4])
+                    for row in result]
+                return dishes
+            else:
+                return "Блюда не найдены"
+        else:
+            return f"Ошибка подключения к базе данных: {query.error}"
+
+    def add_dish(self, dish_name, price, weight, category_id):
+        data_service = DatabaseService()
+        query = data_service.add_dish_db(dish_name, price, weight, category_id)
+        if query.error is None:
+            return True
+        else:
+            return f"Ошибка подключения к базе данных: {query.error}"
+
+    def get_dish_by_id(self, id_dish):
         data_service = DatabaseService()
         query = data_service.get_dish_by_id_db(id_dish)
         if query.error is None:
@@ -58,4 +85,3 @@ class DishService:
                 return None
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
-

@@ -144,3 +144,24 @@ class UserService(metaclass=SingletonMeta):
             return ""
         else:
             return f"Ошибка подключения к базе данных: {query.error}"
+
+    def verify_password(self, password):
+        if not self.__user:
+            return False
+            
+        return bcrypt.checkpw(password.encode('utf-8'), self.__user.password)
+        
+    def update_password(self, new_password):
+        if not self.__user:
+            return False
+            
+        data_service = DatabaseService()
+        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+        
+        query = data_service.update_password_db(self.__user.login, hashed_password)
+        
+        if query.error is None:
+            self.__user.password = hashed_password
+            return True
+        else:
+            return False

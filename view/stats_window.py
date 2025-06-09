@@ -25,12 +25,15 @@ class StatsWindow(QWidget):
         layout.addWidget(header)
 
         stats = self.order_service.get_today_stats()
+        if stats is None:
+            stats = [0, 0, 0] 
+
         stats_layout = QHBoxLayout()
 
         orders_container = QWidget()
         orders_layout = QVBoxLayout(orders_container)
         orders_title = QLabel("Выполненных заказов")
-        orders_value = QLabel(str(stats[0]))
+        orders_value = QLabel(str(stats[0] or 0))  # Use 0 if None
         orders_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         orders_value.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -40,7 +43,8 @@ class StatsWindow(QWidget):
         avg_container = QWidget()
         avg_layout = QVBoxLayout(avg_container)
         avg_title = QLabel("Средний чек\n(по выполненным)")
-        avg_value = QLabel(f"{stats[1]:.2f} руб.")
+        avg_value_text = f"{stats[1]:.2f} руб." if stats[1] is not None else "0.00 руб."
+        avg_value = QLabel(avg_value_text)
         avg_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         avg_value.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -50,7 +54,8 @@ class StatsWindow(QWidget):
         sum_container = QWidget()
         sum_layout = QVBoxLayout(sum_container)
         revenue_title = QLabel("Выручка за день\n(по выполненным)")
-        revenue_value = QLabel(f"{stats[2]:.2f} руб.")
+        revenue_value_text = f"{stats[2]:.2f} руб." if stats[2] is not None else "0.00 руб."
+        revenue_value = QLabel(revenue_value_text)
         revenue_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         revenue_value.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -69,12 +74,15 @@ class StatsWindow(QWidget):
         layout.addStretch()
 
         popular_dishes_today = self.order_service.get_popular_dishes()
+        if popular_dishes_today is None:
+            popular_dishes_today = []
 
         popular_dishes_table = QTableWidget()
         popular_dishes_table.setColumnCount(3)
         popular_dishes_table.setRowCount(len(popular_dishes_today))
         popular_dishes_table.setFixedHeight(230)
-        popular_dishes_table.setHorizontalHeaderLabels(["Блюдо", "Количество", "Выручка"])
+        popular_dishes_table.setHorizontalHeaderLabels(
+            ["Блюдо", "Количество", "Выручка"])
         popular_dishes_table.setColumnWidth(0, 240)
         popular_dishes_table.setColumnWidth(1, 170)
         popular_dishes_table.setColumnWidth(2, 210)
@@ -94,11 +102,21 @@ class StatsWindow(QWidget):
             popular_dishes_table.setItem(i, 2, dish_sum)
 
         button_layout = QHBoxLayout()
+
+        export_button = QPushButton("Экспорт в Excel")
+        export_button.setFixedSize(120, 25)
+        export_button.setStyleSheet(
+            "background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
+        export_button.clicked.connect(
+            lambda: export_stats_to_excel(self, stats, popular_dishes_today))
+        button_layout.addWidget(export_button)
+
+        button_layout.addStretch()
+
         back_button = QPushButton("Назад")
         back_button.setFixedSize(60, 25)
         back_button.setStyleSheet(
             "background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         back_button.clicked.connect(lambda: open_order_list_window(self))
-        button_layout.addStretch()
         button_layout.addWidget(back_button)
         layout.addLayout(button_layout)

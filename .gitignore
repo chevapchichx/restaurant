@@ -1,2 +1,37 @@
-﻿.vs/
-\__pycache__
+﻿# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Файлы среды выполнения
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Файлы IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Файлы macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Файлы логов
+*.log
+
+# Временные файлы
+*.tmp
+*.bak
+*.swp
+
+# Локальные конфигурации
+config_local.txt

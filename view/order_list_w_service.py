@@ -64,3 +64,17 @@ def open_stats_window(self):
     self.stats_window = StatsWindow()
     self.stats_window.show()
     self.close()
+
+
+def open_menu_management_window(self):
+    from view.menu_management_window import MenuManagementWindow
+    self.menu_window = MenuManagementWindow()
+    self.menu_window.show()
+    self.close()
+
+
+def open_reservation_list_window(self):
+    from view.reservation_list_window import ReservationListWindow
+    self.reservation_list_window = ReservationListWindow()
+    self.reservation_list_window.show()
+    self.close()

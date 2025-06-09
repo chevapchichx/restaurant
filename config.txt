@@ -1,0 +1,4 @@
+[database]
+db_url = mysql+pymysql://chevapchich:chevapchichroot3_@109.196.102.132:3306/restaurant
+db_url_1 = mysql+pymysql://chevapchich:5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5@88.84.204.195:3307/restaurant
+db_url_2 = mysql+pymysql://root:root@localhost/restaurant
