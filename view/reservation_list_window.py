@@ -61,7 +61,7 @@ class ReservationListWindow(QWidget):
         self.reservations_table.setColumnWidth(3, 50)   
         self.reservations_table.setColumnWidth(4, 90) 
         self.reservations_table.setColumnWidth(5, 85)   
-        self.reservations_table.setColumnWidth(6, 110) 
+        self.reservations_table.setColumnWidth(6, 130) 
 
         self.reservations_table.setHorizontalHeaderLabels(
             ["Имя клиента", "Телефон", "Гости", "Стол", "Время", "Статус", "Действия"])
@@ -102,7 +102,11 @@ class ReservationListWindow(QWidget):
             table_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.reservations_table.setItem(i, 3, table_item)
 
-            time_item = QTableWidgetItem(reservation.formatted_time)
+            time_str = reservation.formatted_time
+            if len(time_str) > 5: 
+                time_str = time_str[:5]  
+
+            time_item = QTableWidgetItem(time_str)
             time_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.reservations_table.setItem(i, 4, time_item)
 

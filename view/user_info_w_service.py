@@ -24,13 +24,10 @@ def open_menu_management_window(self):
 
 
 def open_change_password_window(self):
-    """
-    Открывает окно смены пароля как модальное окно
-    """
+
     self.change_password_window = ChangePasswordWindow()
     self.change_password_window.setWindowModality(
-        Qt.WindowModality.WindowModal)  # Делаем окно модальным
-    # Центрируем окно относительно родительского
+        Qt.WindowModality.WindowModal) 
     self.change_password_window.move(
         self.x() + (self.width() - self.change_password_window.width()) // 2,
         self.y() + (self.height() - self.change_password_window.height()) // 2

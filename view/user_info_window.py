@@ -77,28 +77,24 @@ class UserInfoWindow(QWidget):
 
         main_layout.addLayout(details_layout)
 
-        # Добавляем кнопку смены пароля
-        change_password_layout = QHBoxLayout()
-        change_password_layout.addStretch()
+        back_button_layout = QHBoxLayout()
+        back_button_layout.addStretch()
+
         self.change_password_button = QPushButton("Сменить пароль")
         self.change_password_button.setFixedSize(150, 25)
         self.change_password_button.setStyleSheet(
             "background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         self.change_password_button.clicked.connect(
             lambda: open_change_password_window(self))
-        change_password_layout.addWidget(self.change_password_button)
-        change_password_layout.addStretch()
-        main_layout.addLayout(change_password_layout)
+        back_button_layout.addWidget(self.change_password_button)
+        main_layout.addLayout(back_button_layout)
 
-        back_button_layout = QHBoxLayout()
-        back_button_layout.addStretch()
         self.back_button = QPushButton("Назад")
         self.back_button.setFixedSize(60, 25)
         self.back_button.setStyleSheet(
             "background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
 
         back_button_layout.addWidget(self.back_button)
-        main_layout.addLayout(back_button_layout)
 
         if self.user.role == UserRole.WAITER or self.user.role == UserRole.ADMIN:
             self.back_button.clicked.connect(

@@ -33,8 +33,6 @@ def add_dish(self):
     result = self.dish_service.add_dish(dish_name, price, weight, category_id)
 
     if result is True:
-        QMessageBox.information(
-            self, "Успех", "Блюдо успешно добавлено в меню")
         open_menu_management_window(self)
     else:
         self.error_label.setText(f"Ошибка при добавлении блюда: {result}")

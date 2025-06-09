@@ -23,31 +23,26 @@ class AddDishWindow(QWidget):
 
         main_layout = QVBoxLayout(self)
 
-        # Form layout
         form_layout = QVBoxLayout()
 
-        # Dish name
         self.name_label = QLabel("Название блюда:")
         self.name_input = QLineEdit()
         self.name_input.setFixedHeight(25)
         form_layout.addWidget(self.name_label)
         form_layout.addWidget(self.name_input)
 
-        # Price
         self.price_label = QLabel("Цена (руб.):")
         self.price_input = QLineEdit()
         self.price_input.setFixedHeight(25)
         form_layout.addWidget(self.price_label)
         form_layout.addWidget(self.price_input)
 
-        # Weight
         self.weight_label = QLabel("Вес (г):")
         self.weight_input = QLineEdit()
         self.weight_input.setFixedHeight(25)
         form_layout.addWidget(self.weight_label)
         form_layout.addWidget(self.weight_input)
 
-        # Category
         self.category_label = QLabel("Категория:")
         self.category_combo = QComboBox()
         self.category_combo.setFixedHeight(25)
@@ -57,17 +52,14 @@ class AddDishWindow(QWidget):
         form_layout.addWidget(self.category_label)
         form_layout.addWidget(self.category_combo)
 
-        # Error label
         self.error_label = QLabel("")
         self.error_label.setStyleSheet("color: red;")
         form_layout.addWidget(self.error_label)
 
-        # Add some space
         form_layout.addStretch()
 
         main_layout.addLayout(form_layout)
 
-        # Buttons
         button_layout = QHBoxLayout()
 
         self.add_button = QPushButton("Добавить блюдо")
@@ -89,22 +81,18 @@ class AddDishWindow(QWidget):
 
         main_layout.addLayout(button_layout)
 
-        # Connect validation
         self.name_input.textChanged.connect(self.validate_inputs)
         self.price_input.textChanged.connect(self.validate_inputs)
         self.weight_input.textChanged.connect(self.validate_inputs)
         self.category_combo.currentIndexChanged.connect(self.validate_inputs)
 
     def validate_inputs(self):
-        """Validate all inputs and enable/disable add button accordingly"""
         valid = True
         self.error_label.setText("")
 
-        # Check if name is not empty
         if not self.name_input.text().strip():
             valid = False
 
-        # Check if price is a valid number
         try:
             price = float(self.price_input.text().strip())
             if price <= 0:
@@ -116,7 +104,6 @@ class AddDishWindow(QWidget):
                 self.error_label.setText("Цена должна быть числом")
             valid = False
 
-        # Check if weight is a valid number
         try:
             weight = float(self.weight_input.text().strip())
             if weight <= 0:
@@ -128,7 +115,6 @@ class AddDishWindow(QWidget):
                 self.error_label.setText("Вес должен быть числом")
             valid = False
 
-        # Check if category is selected
         if self.category_combo.currentIndex() < 0:
             valid = False
 

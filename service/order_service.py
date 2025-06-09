@@ -356,7 +356,6 @@ class OrderService:
                     order_items.append(order_item)
                 return order_items
             else:
-                QMessageBox.critical(None, "Ошибка", "Популярные блюда не найдены")
                 return None
         else:
             QMessageBox.critical(

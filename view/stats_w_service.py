@@ -37,7 +37,7 @@ def export_stats_to_excel(self, stats, popular_dishes):
         )
 
         ws.merge_cells('A1:C1')
-        ws['A1'] = f"Статистика ресторана за {current_date}"
+        ws['A1'] = f"Статистика заказов за {current_date}"
         ws['A1'].font = Font(bold=True, size=14)
         ws['A1'].alignment = center_alignment
 

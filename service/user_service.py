@@ -149,7 +149,24 @@ class UserService(metaclass=SingletonMeta):
         if not self.__user:
             return False
             
-        return bcrypt.checkpw(password.encode('utf-8'), self.__user.password)
+        hashed_password = self.__user.password
+        
+        if isinstance(hashed_password, str):
+            if hashed_password.startswith("b'$2") and hashed_password.endswith("'"):
+                bcrypt_string = hashed_password[2:-1]
+                hashed_password = bcrypt_string.encode('utf-8')
+            elif hashed_password.startswith(('$2a$', '$2b$', '$2y$')):
+                hashed_password = hashed_password.encode('utf-8')
+            else:
+                result = password == hashed_password
+                return result
+
+        try:
+            result = bcrypt.checkpw(password.encode('utf-8'), hashed_password)
+            return result
+        except ValueError as e:
+            return False
+
         
     def update_password(self, new_password):
         if not self.__user:

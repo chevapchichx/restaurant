@@ -117,7 +117,7 @@ class OrderListWindow(QWidget):
         self.orders_table.setColumnWidth(2, 140)
         self.orders_table.setColumnWidth(3, 140)
         self.orders_table.setColumnWidth(4, 70)
-        self.orders_table.setColumnWidth(5, 130)
+        self.orders_table.setColumnWidth(5, 150)
         self.orders_table.setHorizontalHeaderLabels(
             ["Заказ", "Стол", "Время", "Дата", "Гости", "Статус"])
         self.orders_table.setSelectionBehavior(
@@ -132,8 +132,8 @@ class OrderListWindow(QWidget):
             self.orders_table.setColumnWidth(2, 100)
             self.orders_table.setColumnWidth(3, 100)
             self.orders_table.setColumnWidth(4, 60)
-            self.orders_table.setColumnWidth(5, 100)
-            self.orders_table.setColumnWidth(6, 140)
+            self.orders_table.setColumnWidth(5, 110)
+            self.orders_table.setColumnWidth(6, 150)
             self.orders_table.setHorizontalHeaderLabels(
                 ["Заказ", "Стол", "Время", "Дата", "Гости", "Статус", "Официант"])
 

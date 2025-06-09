@@ -33,7 +33,7 @@ class StatsWindow(QWidget):
         orders_container = QWidget()
         orders_layout = QVBoxLayout(orders_container)
         orders_title = QLabel("Выполненных заказов")
-        orders_value = QLabel(str(stats[0] or 0))  # Use 0 if None
+        orders_value = QLabel(str(stats[0] or 0)) 
         orders_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         orders_value.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -71,7 +71,7 @@ class StatsWindow(QWidget):
         popular_dishes_label = QLabel("Популярные блюда")
         popular_dishes_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(popular_dishes_label)
-        layout.addStretch()
+        # layout.addStretch()
 
         popular_dishes_today = self.order_service.get_popular_dishes()
         if popular_dishes_today is None:
@@ -83,9 +83,9 @@ class StatsWindow(QWidget):
         popular_dishes_table.setFixedHeight(230)
         popular_dishes_table.setHorizontalHeaderLabels(
             ["Блюдо", "Количество", "Выручка"])
-        popular_dishes_table.setColumnWidth(0, 240)
+        popular_dishes_table.setColumnWidth(0, 250)
         popular_dishes_table.setColumnWidth(1, 170)
-        popular_dishes_table.setColumnWidth(2, 210)
+        popular_dishes_table.setColumnWidth(2, 220)
         layout.addWidget(popular_dishes_table)
 
         for i, order_item in enumerate(popular_dishes_today):

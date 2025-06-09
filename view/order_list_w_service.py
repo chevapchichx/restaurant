@@ -1,10 +1,5 @@
 from service.order_service import *
 from service.user_service import *
-import sys
-import os
-sys.path.append(
-    (os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))  # test
-
 
 def open_auth_window(self):
     from auth_window import AuthWindow

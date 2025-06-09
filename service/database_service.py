@@ -9,7 +9,7 @@ from data.order_data import OrderStatus
 # config = configparser.configparser()
 # config.read(os.path.join(os.path.dirname(
 #     os.path.dirname(os.path.abspath(__file__))), 'config.txt'))
-db_url = "mysql+pymysql://root:root@localhost/restaurant"
+db_url = "mysql+pymysql://chevapchich:root@192.168.0.33/restaurant"
 
 
 class DatabaseService:

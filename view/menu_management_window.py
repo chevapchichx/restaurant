@@ -62,10 +62,11 @@ class MenuManagementWindow(QWidget):
         self.dish_table.setColumnCount(4)
         self.dish_table.setHorizontalHeaderLabels(
             ["Название", "Цена (руб.)", "Вес (г)", "Категория"])
-        self.dish_table.setColumnWidth(0, 240)
+    
+        self.dish_table.setColumnWidth(0, 250)
         self.dish_table.setColumnWidth(1, 100)
         self.dish_table.setColumnWidth(2, 100)
-        self.dish_table.setColumnWidth(3, 170)
+        self.dish_table.setColumnWidth(3, 182)
         self.dish_table.setEditTriggers(
             QTableWidget.EditTrigger.NoEditTriggers)
         self.dish_table.setSelectionBehavior(
@@ -106,6 +107,11 @@ class MenuManagementWindow(QWidget):
                 self.dish_table.setItem(i, 3, category_item)
         else:
             self.dish_table.setRowCount(0)
+
+        self.dish_table.setColumnWidth(0, 250)
+        self.dish_table.setColumnWidth(1, 100)
+        self.dish_table.setColumnWidth(2, 100)
+        self.dish_table.setColumnWidth(3, 182)
 
     def filter_dishes(self):
         index = self.category_combo.currentIndex()

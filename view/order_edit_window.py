@@ -126,7 +126,7 @@ class OrderEditWindow(QWidget):
             amount_label.setFixedSize(40, 30)
 
             status_label = QLabel(f"{order_item.status_name}")
-            status_label.setFixedSize(90, 30)
+            status_label.setFixedSize(80, 30)
             status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
             self.dish_info_layout.addWidget(dish_label, i, 0)
@@ -134,19 +134,20 @@ class OrderEditWindow(QWidget):
             self.dish_info_layout.addWidget(status_label, i, 3)
 
             delete_button = QPushButton("Удалить")
-            delete_button.setFixedSize(65, 30)
+            delete_button.setFixedSize(60, 30)
             delete_button.clicked.connect(lambda _, order_item=order_item: delete_dish(self, order_item, self.order.id_order))
 
             if self.user.role == UserRole.ADMIN:
-                delete_button.setFixedSize(65, 30)
+                delete_button.setFixedSize(60, 30)
                 self.dish_info_layout.addWidget(delete_button, i, 4)
             
             self.dish_info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
             if order_item.status == DishStatus.CREATED:
-                delete_button.setFixedSize(65, 30)
+                delete_button.setFixedSize(60, 30)
                 spinbox = QSpinBox()
-                spinbox.setFixedSize(40, 30)
+                spinbox.setFixedSize(60, 30)
+                spinbox.setMinimum(1)
                 spinbox.setValue(order_item.amount)
                 spinbox.valueChanged.connect(lambda: update_order_item_amount(self))
                 self.dish_info_layout.addWidget(spinbox, i, 2)
