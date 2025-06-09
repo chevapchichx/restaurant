@@ -1,8 +1,9 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel,
-    QTableWidget, QTableWidgetItem, QComboBox
+    QTableWidget, QTableWidgetItem, QComboBox, QHeaderView
 )
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
 from service.dish_service import DishService
 from service.user_service import UserService
 from view.menu_management_w_service import *
@@ -18,7 +19,8 @@ class MenuManagementWindow(QWidget):
 
     def ui_menu_management_window(self):
         self.setWindowTitle("Управление меню")
-        self.setGeometry(400, 230, 680, 450)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(400, 230, 680, 450)
         self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)
@@ -62,7 +64,7 @@ class MenuManagementWindow(QWidget):
         self.dish_table.setColumnCount(4)
         self.dish_table.setHorizontalHeaderLabels(
             ["Название", "Цена (руб.)", "Вес (г)", "Категория"])
-    
+
         self.dish_table.setColumnWidth(0, 250)
         self.dish_table.setColumnWidth(1, 100)
         self.dish_table.setColumnWidth(2, 100)
@@ -115,7 +117,7 @@ class MenuManagementWindow(QWidget):
 
     def filter_dishes(self):
         index = self.category_combo.currentIndex()
-        if index == 0: 
+        if index == 0:
             self.load_dishes()
         else:
             category_id = self.categories[index - 1].id_menu_category

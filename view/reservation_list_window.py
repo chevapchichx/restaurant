@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (
     QMessageBox
 )
 from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtGui import QIcon
 from service.reservation_service import ReservationService
 from service.user_service import UserService, UserRole
 from data.reservation_data import ReservationStatus
@@ -19,7 +20,8 @@ class ReservationListWindow(QWidget):
 
     def ui_reservation_list_window(self):
         self.setWindowTitle("Управление бронированием")
-        self.setGeometry(400, 230, 650, 450)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(400, 230, 650, 450)
         self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)
@@ -55,13 +57,13 @@ class ReservationListWindow(QWidget):
 
         self.reservations_table = QTableWidget()
         self.reservations_table.setColumnCount(7)
-        self.reservations_table.setColumnWidth(0, 130)  
-        self.reservations_table.setColumnWidth(1, 105)  
-        self.reservations_table.setColumnWidth(2, 50)  
-        self.reservations_table.setColumnWidth(3, 50)   
-        self.reservations_table.setColumnWidth(4, 90) 
-        self.reservations_table.setColumnWidth(5, 85)   
-        self.reservations_table.setColumnWidth(6, 130) 
+        self.reservations_table.setColumnWidth(0, 130)
+        self.reservations_table.setColumnWidth(1, 105)
+        self.reservations_table.setColumnWidth(2, 50)
+        self.reservations_table.setColumnWidth(3, 50)
+        self.reservations_table.setColumnWidth(4, 90)
+        self.reservations_table.setColumnWidth(5, 85)
+        self.reservations_table.setColumnWidth(6, 130)
 
         self.reservations_table.setHorizontalHeaderLabels(
             ["Имя клиента", "Телефон", "Гости", "Стол", "Время", "Статус", "Действия"])
@@ -103,8 +105,8 @@ class ReservationListWindow(QWidget):
             self.reservations_table.setItem(i, 3, table_item)
 
             time_str = reservation.formatted_time
-            if len(time_str) > 5: 
-                time_str = time_str[:5]  
+            if len(time_str) > 5:
+                time_str = time_str[:5]
 
             time_item = QTableWidgetItem(time_str)
             time_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)

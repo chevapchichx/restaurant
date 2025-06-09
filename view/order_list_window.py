@@ -8,7 +8,7 @@ from view.order_list_w_service import *
 from data.order_data import OrderStatus
 from service.user_service import UserService, UserRole
 from service.order_service import OrderService
-from PyQt6.QtGui import QColor
+from PyQt6.QtGui import QColor, QIcon
 
 
 class OrderListWindow(QWidget):
@@ -28,7 +28,8 @@ class OrderListWindow(QWidget):
 
     def ui_order_list_window(self):
         self.setWindowTitle("Текущие заказы")
-        self.setGeometry(400, 230, 680, 450)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(400, 230, 680, 450)
         self.setFixedSize(680, 450)
 
         self.main_layout = QVBoxLayout(self)
@@ -58,14 +59,14 @@ class OrderListWindow(QWidget):
         self.staff_list.setFixedSize(180, 25)
         self.staff_list.setStyleSheet(
             "background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
-        
+
         self.exit_layout = QHBoxLayout()
 
         if self.user.role == UserRole.ADMIN:
             self.exit_layout.addWidget(self.staff_list)
             self.staff_list.clicked.connect(
                 lambda: open_staff_list_window(self))
-            
+
             self.menu_button = QPushButton("Управление меню")
             self.menu_button.setFixedSize(150, 25)
             self.menu_button.setStyleSheet(
@@ -139,7 +140,6 @@ class OrderListWindow(QWidget):
 
         self.ui_update_order_list_table()
 
-        
         self.exit_layout.addStretch()
         self.exit_layout.addWidget(self.exit_button)
 

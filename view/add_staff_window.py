@@ -1,27 +1,34 @@
+from data.user_data import UserRole, User
+from service.user_service import UserService
+from view.add_staff_w_service import *
 from PyQt6.QtWidgets import (
-    QApplication, QPushButton, QVBoxLayout, QHBoxLayout, 
-    QWidget, QLabel, QTableWidget, QTableWidgetItem, QLineEdit, QComboBox
+    QApplication, QHBoxLayout, QLabel, QLineEdit,
+    QPushButton, QVBoxLayout, QWidget, QComboBox,
+    QDateEdit, QMessageBox
 )
+from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtGui import QIcon
 import sys
 import os
-sys.path.append((os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))  #test
-from PyQt6.QtCore import Qt
-from view.add_staff_w_service import *
-from service.user_service import UserService
-from data.user_data import UserRole, User
+sys.path.append(
+    (os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))  # test
+
 
 class AddStaffWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.__adding_staff_mode = True
         self.ui_add_staff_window()
-    
+
     def ui_add_staff_window(self):
         self.__adding_staff_mode = True
-
         self.setWindowTitle("Добавление сотрудника")
-        self.setGeometry(400, 230, 650, 450)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(500, 200, 400, 550)
         self.setFixedSize(680, 450)
+        
+        # self.setGeometry(400, 230, 650, 450)
+        # self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)
 
@@ -29,13 +36,16 @@ class AddStaffWindow(QWidget):
 
         self.add_staff_button = QPushButton("Добавить сотрудника")
         self.add_staff_button.setFixedSize(180, 25)
-        self.add_staff_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
-        self.add_staff_button.clicked.connect(lambda: update_or_add_staff(self))
+        self.add_staff_button.setStyleSheet(
+            "background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
+        self.add_staff_button.clicked.connect(
+            lambda: update_or_add_staff(self))
         self.add_staff_button.setEnabled(False)
 
         self.back_button = QPushButton("Назад")
         self.back_button.setFixedSize(60, 25)
-        self.back_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
+        self.back_button.setStyleSheet(
+            "background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         self.back_button.clicked.connect(lambda: open_staff_list_window(self))
 
         top_layout.addWidget(self.add_staff_button)

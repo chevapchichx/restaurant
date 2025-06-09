@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
-                             QLabel, QPushButton, QTableWidget, QTableWidgetItem)
-from PyQt6.QtCore import Qt
+                             QLabel, QPushButton, QTableWidget, QTableWidgetItem, QDateEdit, QComboBox, QMessageBox)
+from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtGui import QIcon
 from datetime import datetime
 from service.order_service import OrderService
 from view.stats_w_service import *
@@ -14,7 +15,8 @@ class StatsWindow(QWidget):
 
     def ui_stats_window(self):
         self.setWindowTitle("Статистика заказов")
-        self.setGeometry(400, 230, 680, 450)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(400, 230, 680, 450)
         self.setFixedSize(680, 450)
 
         layout = QVBoxLayout()
@@ -26,14 +28,14 @@ class StatsWindow(QWidget):
 
         stats = self.order_service.get_today_stats()
         if stats is None:
-            stats = [0, 0, 0] 
+            stats = [0, 0, 0]
 
         stats_layout = QHBoxLayout()
 
         orders_container = QWidget()
         orders_layout = QVBoxLayout(orders_container)
         orders_title = QLabel("Выполненных заказов")
-        orders_value = QLabel(str(stats[0] or 0)) 
+        orders_value = QLabel(str(stats[0] or 0))
         orders_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         orders_value.setAlignment(Qt.AlignmentFlag.AlignCenter)
 

@@ -1,7 +1,7 @@
 import sys
 from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QLineEdit,
                              QPushButton, QVBoxLayout, QWidget)
-
+from PyQt6.QtGui import QIcon
 from service.user_service import UserService
 from view.auth_w_service import *
 
@@ -14,7 +14,8 @@ class AuthWindow(QWidget):
 
     def ui_auth_window(self):
         self.setWindowTitle("Авторизация")
-        self.setGeometry(500, 300, 400, 200)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(500, 300, 400, 200)
         self.setFixedSize(400, 200)
 
         main_layout = QVBoxLayout()
@@ -56,6 +57,7 @@ class AuthWindow(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("restaurant_icon.ico"))
     window = AuthWindow()
     window.show()
     sys.exit(app.exec())

@@ -1,8 +1,9 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel,
-    QLineEdit, QComboBox, QMessageBox
+    QLineEdit, QComboBox, QDoubleSpinBox, QTextEdit, QMessageBox
 )
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
 from service.dish_service import DishService
 from service.user_service import UserService
 from view.add_dish_w_service import *
@@ -18,8 +19,12 @@ class AddDishWindow(QWidget):
 
     def ui_add_dish_window(self):
         self.setWindowTitle("Добавление блюда")
-        self.setGeometry(400, 230, 500, 400)
-        self.setFixedSize(500, 400)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(500, 300, 400, 350)
+        self.setFixedSize(500, 300)
+
+        # self.setGeometry(400, 230, 500, 400)
+        # self.setFixedSize(500, 400)
 
         main_layout = QVBoxLayout(self)
 

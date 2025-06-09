@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMessageBox,
                             QVBoxLayout, QWidget)
 import datetime
 import weakref
+from PyQt6.QtGui import QIcon
 from service.dish_service import *
 from service.order_service import *
 from service.user_service import UserRole, UserService
@@ -21,7 +22,8 @@ class DishListWindow(QWidget):
     
     def ui_dish_list_window(self):
         self.setWindowTitle("Текущие блюда")
-        self.setGeometry(400, 230, 650, 450)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(400, 230, 650, 450)
         self.setFixedSize(680, 450)
 
         self.main_layout = QVBoxLayout(self)

@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (
     QSpinBox, QComboBox, QTextEdit, QMessageBox
 )
 from PyQt6.QtCore import Qt, QDate, QTime
+from PyQt6.QtGui import QIcon
 from service.reservation_service import ReservationService
 from service.order_service import OrderService
 from data.reservation_data import Reservation, ReservationStatus
@@ -19,8 +20,12 @@ class AddReservationWindow(QWidget):
 
     def ui_add_reservation_window(self):
         self.setWindowTitle("Добавление бронирования")
-        self.setGeometry(400, 230, 650, 450)
-        self.setFixedSize(680, 450)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(500, 300, 400, 450)
+        self.setFixedSize(680, 350)
+
+        # self.setGeometry(400, 230, 650, 450)
+        # self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)
 
@@ -135,8 +140,7 @@ class AddReservationWindow(QWidget):
         guests = self.guests_spinbox.value()
         self.table_combobox.clear()
 
-
-        tables = [1, 2, 3, 4, 5, 6]  
+        tables = [1, 2, 3, 4, 5, 6]
         capacities = {1: 4, 2: 4, 3: 4, 4: 2, 5: 6, 6: 6}
 
         for table_id in tables:

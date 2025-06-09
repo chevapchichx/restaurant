@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QTableWidget, QTableWidgetItem, QSpacerItem, QSizePolicy, QGridLayout
 )
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
 from view.staff_info_w_service import *
 from service.user_service import UserService
 from data.user_data import UserRole, User
@@ -15,7 +16,8 @@ class StaffInfoWindow(QWidget):
     
     def ui_staff_info_window(self):
         self.setWindowTitle("Информация о сотруднике")
-        self.setGeometry(400, 230, 650, 450)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(400, 230, 650, 450)
         self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)

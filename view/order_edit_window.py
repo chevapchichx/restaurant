@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import (
     QApplication, QDialog, QVBoxLayout, QMessageBox, QWidget, QComboBox, QScrollArea
 )
 from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QIcon
 from view.order_edit_w_service import *
 from data.order_data import OrderStatus
 from data.order_item_data import DishStatus
@@ -10,15 +11,16 @@ from service.order_service import OrderService
 from service.dish_service import DishService
 from service.user_service import UserService
 
-class OrderEditWindow(QWidget): 
+
+class OrderEditWindow(QWidget):
     def __init__(self, id_order):
         super().__init__()
         self.order = OrderService().get_order_for_edit(id_order)
         self.user = UserService().authorised_user
         self.adding_dish_mode = True
-        self.ui_order_edit_window()  
+        self.ui_order_edit_window()
 
-    def ui_order_edit_window(self): 
+    def ui_order_edit_window(self):
         if self.order.status == OrderStatus.COOKED:
             self.adding_dish_mode = False
         else:
@@ -27,15 +29,18 @@ class OrderEditWindow(QWidget):
         self.categories = DishService().get_menu_categories()
 
         self.setWindowTitle(f"Детали заказа {self.order.order_num}")
-        self.setGeometry(400, 230, 680, 450)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(400, 230, 680, 450)
         self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(10, 20, 10, 10)
 
         top_layout = QVBoxLayout()
-        self.table_label = QLabel(f"Стол: {self.order.table.id_table}, Количество гостей: {self.order.guests}")
-        self.table_label.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignTop)
+        self.table_label = QLabel(
+            f"Стол: {self.order.table.id_table}, Количество гостей: {self.order.guests}")
+        self.table_label.setAlignment(
+            Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignTop)
         top_layout.addWidget(self.table_label)
         self.dish_label = QLabel("Блюда:")
         self.dish_label.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -53,7 +58,7 @@ class OrderEditWindow(QWidget):
         self.dish_info_layout.setVerticalSpacing(10)
         scroll_layout.addLayout(self.dish_info_layout)
         main_layout.addWidget(scroll_area)
-        
+
         bottom_layout = QHBoxLayout()
         self.add_dish_label = QLabel("Добавить блюдо:")
         self.add_dish_label.setAlignment(Qt.AlignmentFlag.AlignBottom)
@@ -66,15 +71,18 @@ class OrderEditWindow(QWidget):
         self.choose_category_combobox = QComboBox()
         self.choose_category_combobox.setBaseSize(100, 30)
         self.choose_category_combobox.addItem("Не выбрано")
-        self.choose_category_combobox.addItems([category.name for category in self.categories])
-        self.choose_category_combobox.activated.connect(lambda: update_dishes_combobox(self))
+        self.choose_category_combobox.addItems(
+            [category.name for category in self.categories])
+        self.choose_category_combobox.activated.connect(
+            lambda: update_dishes_combobox(self))
         self.add_dish_layout.addWidget(self.choose_category_combobox, 0, 0)
 
         self.choose_dish_combobox = QComboBox()
         self.add_dish_layout.addWidget(self.choose_dish_combobox, 0, 1)
-        self.choose_dish_combobox.activated.connect(lambda: add_dish_to_order(self))
+        self.choose_dish_combobox.activated.connect(
+            lambda: add_dish_to_order(self))
         self.choose_dish_combobox.setDisabled(True)
-   
+
         main_layout.addLayout(self.add_dish_layout)
 
         self.total_sum_label = QLabel(f"Итого: {self.order.order_sum} руб.")
@@ -86,17 +94,21 @@ class OrderEditWindow(QWidget):
 
         self.update_or_pay_button = QPushButton("Отправить на кухню")
         self.update_or_pay_button.setFixedSize(140, 25)
-        self.update_or_pay_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
-        self.update_or_pay_button.clicked.connect(lambda: update_or_pay_order(self))
+        self.update_or_pay_button.setStyleSheet(
+            "background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
+        self.update_or_pay_button.clicked.connect(
+            lambda: update_or_pay_order(self))
 
         self.pay_button = QPushButton("Оплатить")
         self.pay_button.setFixedSize(140, 25)
-        self.pay_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
+        self.pay_button.setStyleSheet(
+            "background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         self.pay_button.clicked.connect(lambda: update_order_status(self))
 
         self.back_button = QPushButton("Заказы")
         self.back_button.setFixedSize(80, 25)
-        self.back_button.setStyleSheet("background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
+        self.back_button.setStyleSheet(
+            "background-color: #7b99ca; font-size: 14px; color: white; border: 0; border-radius: 5px;")
         self.back_button.clicked.connect(lambda: open_order_list_window(self))
         self.button_layout.addWidget(self.back_button)
         main_layout.addLayout(self.button_layout)
@@ -135,12 +147,13 @@ class OrderEditWindow(QWidget):
 
             delete_button = QPushButton("Удалить")
             delete_button.setFixedSize(60, 30)
-            delete_button.clicked.connect(lambda _, order_item=order_item: delete_dish(self, order_item, self.order.id_order))
+            delete_button.clicked.connect(lambda _, order_item=order_item: delete_dish(
+                self, order_item, self.order.id_order))
 
             if self.user.role == UserRole.ADMIN:
                 delete_button.setFixedSize(60, 30)
                 self.dish_info_layout.addWidget(delete_button, i, 4)
-            
+
             self.dish_info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
             if order_item.status == DishStatus.CREATED:
@@ -149,7 +162,8 @@ class OrderEditWindow(QWidget):
                 spinbox.setFixedSize(60, 30)
                 spinbox.setMinimum(1)
                 spinbox.setValue(order_item.amount)
-                spinbox.valueChanged.connect(lambda: update_order_item_amount(self))
+                spinbox.valueChanged.connect(
+                    lambda: update_order_item_amount(self))
                 self.dish_info_layout.addWidget(spinbox, i, 2)
                 self.dish_spinboxes.update({spinbox: order_item})
                 self.dish_info_layout.addWidget(delete_button, i, 4)
@@ -163,7 +177,8 @@ class OrderEditWindow(QWidget):
         if hasattr(self, 'update_or_pay_button') and hasattr(self, 'pay_button'):
             if any(item.status == DishStatus.CREATED for item in self.order.order_items):
                 if not self.update_or_pay_button.isVisible():
-                    self.button_layout.insertWidget(1, self.update_or_pay_button)
+                    self.button_layout.insertWidget(
+                        1, self.update_or_pay_button)
                     self.update_or_pay_button.setVisible(True)
                 if self.pay_button.isVisible():
                     self.button_layout.removeWidget(self.pay_button)
@@ -182,4 +197,3 @@ class OrderEditWindow(QWidget):
                 if self.pay_button.isVisible():
                     self.button_layout.removeWidget(self.pay_button)
                     self.pay_button.setVisible(False)
-

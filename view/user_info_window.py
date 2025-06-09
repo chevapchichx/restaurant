@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import (
     QGridLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 )
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
 from service.user_service import UserService, UserRole
 from data.user_data import User
 from view.user_info_w_service import *
@@ -15,8 +16,9 @@ class UserInfoWindow(QWidget):
         self.ui_user_info_window()
 
     def ui_user_info_window(self):
-        self.setWindowTitle("Информация о пользователе")
-        self.setGeometry(400, 230, 650, 450)
+        self.setWindowTitle("Личный кабинет")
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(500, 300, 400, 450)
         self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)

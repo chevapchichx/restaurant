@@ -1,7 +1,7 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout,
                             QLabel, QPushButton, QVBoxLayout, QWidget)
-
+from PyQt6.QtGui import QIcon
 from service.order_service import OrderService
 from view.order_create_w_service import *
 
@@ -18,7 +18,8 @@ class OrderCreateWindow(QWidget):
 
     def ui_order_create_window(self):
         self.setWindowTitle(f"Новый заказ {self.order_num}")
-        self.setGeometry(400, 230, 680, 450)
+        self.setWindowIcon(QIcon("restaurant_icon.ico"))
+        # self.setGeometry(400, 230, 680, 450)
         self.setFixedSize(680, 450)
 
         main_layout = QVBoxLayout(self)
